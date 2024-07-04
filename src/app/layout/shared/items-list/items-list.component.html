@@ -1,0 +1,92 @@
+@if(title()){
+  <mat-card-header>
+    <mat-card-title>{{ title() }}</mat-card-title>
+  </mat-card-header>
+}
+<div class="card-container">
+  @if (items()?.length) {
+    <mat-accordion>
+      @for (item of paginatedData(); track item.id) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ item.title }} 
+              @if (itemType() === 'Ticket' && item.project) {
+                | {{ item.project.name }}            
+              }
+            </mat-panel-title>
+            <mat-panel-description> 
+              <mat-chip-set>
+                <mat-chip class="priority-high"> <span>Priorité: </span> {{ item.priority.name }}</mat-chip>
+                @if (itemType() === 'Ticket' && item.type) {
+                  <mat-chip> <span>Type: </span>{{ item.type.name }}</mat-chip>
+                }
+                <mat-chip> <span>Statut: </span>{{ item.status.name }}</mat-chip>
+              </mat-chip-set>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="container">
+            @if (itemType() === 'Ticket' && item.epicLink) {
+              <div class="row">
+                <span class="pannel-title">Epic:</span> {{ item.epicLink.name }}
+              </div>
+            }
+            <div class="row">
+              <span class="pannel-title">Propriétaire:</span> {{ item.owner.name }}
+            </div>
+            <div class="row">
+              <span class="pannel-title">Description:</span>
+              <p class="description">{{ item.description }}</p>
+            </div>
+            <div class="row">
+              <span class="pannel-title">Commentaire:</span> 
+              <p class="description">{{ item.comment }}</p>
+            </div>
+            @if (item.responsible) {
+              <div class="row">
+                <span class="pannel-title">Responsable:</span> {{ item.responsible!.name }}
+              </div>
+            }
+            @if (itemType() === 'Ticket' && item.tag) {
+              
+              <div class="row">
+                <span class="pannel-title">Tag:</span> 
+                <div class="chip-set">
+                  <div class="chip">{{ item.tag.name }}</div>
+                </div>
+              </div>
+            }
+            <div class="row">
+              <span class="pannel-title">Date de création:</span> {{ item.createdOn | date}}
+            </div>
+            @if (item.updatedOn) {
+              <div class="row">
+                <span class="pannel-title">Date de modification:</span> {{ item.updatedOn | date}}
+              </div>
+            }
+          </div>
+          <mat-action-row>
+            <button mat-button (click)="updateItemDetails(item)">Modifier</button>
+            <button mat-button (click)="getDetails(item)">Voir détails</button>
+            <button mat-button (click)="deleteItem(item)">Supprimer</button>
+          </mat-action-row>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+    <mat-paginator 
+      [length]="items()!.length"
+      [pageSize]="pageEvent().pageSize"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="handlePageEvent($event)"
+      aria-label="Select page">
+    </mat-paginator>  
+  } @else {
+    <div id="empty-task-message">
+      <span>
+          Aucune tâche !
+      </span>
+    </div>
+  }
+    <div  class="button-bottom">
+      <button mat-raised-button (click)="add()">Créer</button>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+<mat-card appearance="outlined">
+    <mat-card-header>
+        <mat-card-title>Détails {{ itemType() }}</mat-card-title>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+        <div class="data-container">
+            @if(itemType() === 'Ticket'){
+                <div class="data-item">
+                    <div class="data-title">Project:</div>
+                    <div class="data-content">{{ item().project!.name }}</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-title">Type:</div>
+                    <div class="data-content">{{ item().type!.name }}</div>
+                </div>
+            }
+            <div class="data-item">
+                <div class="data-title">Title:</div>
+                <div class="data-content">{{ item().title }}</div>
+            </div>
+            <div class="data-item">
+                <div class="data-title">Description:</div>
+                <div class="data-content">
+                    {{ item().description }}
+                </div>
+            </div>
+            <div class="data-item">
+                <div class="data-title">Comment:</div>
+                <div class="data-content">
+                    {{ item().comment }}
+                </div>
+            </div>
+            <!-- <div class="data-item">
+                <div class="data-title">Story Point:</div>
+                <div class="data-content">4</div>
+            </div> -->
+            <div class="data-item">
+                <div class="data-title">Priority:</div>
+                <div class="data-content">{{ item().priority.name }}</div>
+            </div>
+            <div class="data-item">
+                <div class="data-title">Status:</div>
+                <div class="data-content">{{ item().status.name }}</div>
+            </div>
+            @if (itemType() === 'Ticket') {
+                <div class="data-item">
+                    <div class="data-title">Tag:</div>
+                    <div class="data-content">{{ item().tag!.name }}</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-title">Epic Link:</div>
+                    <div class="data-content">{{ item().epicLink!.name }}</div>
+                </div>
+            }
+            <div class="data-item">
+                <div class="data-title">Owner:</div>
+                <div class="data-content">{{ item().owner.name }}</div>
+            </div>
+            <div class="data-item">
+                <div class="data-title">Responsible:</div>
+                <div class="data-content">{{ item().responsible?.name }}</div>
+            </div>
+            <div class="data-item">
+                <div class="data-title">Created On:</div>
+                <div class="data-content">{{ item().createdOn | date }}</div>
+            </div>
+            @if (item().updatedOn) {
+                <div class="data-item">
+                    <div class="data-title">Updated On:</div>
+                    <div class="data-content">{{ item().updatedOn | date }}</div>
+                </div>
+            }
+        </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+        <button mat-button (click)="updateItemDetails()">Modifier</button>
+        <button mat-button (click)="deleteItem()">Supprimer</button>
+    </mat-card-actions>
+</mat-card>

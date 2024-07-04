@@ -1,0 +1,23 @@
+mat-card {
+    // max-height: 50rem;
+    padding: 16px;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px; 
+}
+.column {
+    flex: 1;
+    padding: 20px;
+    // border: 1px solid #000;
+}
+#empty-task-message {
+    margin-top: 16px;
+    text-align: center;
+}
+.full-width {
+    // flex-grow: 1;
+    padding: 20px;
+    margin-top: 30px;
+}

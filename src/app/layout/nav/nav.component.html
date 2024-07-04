@@ -1,0 +1,36 @@
+<mat-drawer-container class="container">
+    <mat-drawer #sidenav disableClose [opened]="isSideNavBarOpened()">
+        <div class="drawer-content">
+            <div class="item drawer-button">
+                <button mat-icon-button (click)="close()">
+                    <mat-icon fontIcon="close"></mat-icon>
+                </button>
+            </div>
+            <div class="item drawer-icon">
+                <img src="icon-male-user.png" alt="">
+                <p>Sory Ibrahima DANSOKHO</p>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="item large-item">
+                <mat-list role="list">
+                    <mat-list-item role="listitem">
+                        <a routerLink="profile" mat-button extended>
+                            <mat-icon fontIcon="person"></mat-icon>
+                            Modifier mon compte
+                        </a>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="item drawer-button-center">
+                <button mat-flat-button (click)="logout()">
+                    <mat-icon fontIcon="logout"></mat-icon>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </mat-drawer>
+    <mat-drawer-content>
+        <ng-content />
+    </mat-drawer-content>
+</mat-drawer-container>

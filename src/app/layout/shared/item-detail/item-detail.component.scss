@@ -1,0 +1,27 @@
+
+.data-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px;
+}
+.data-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.data-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.data-content {
+    margin-left: 10px;
+    max-height: 200px;
+    overflow: auto;
+}
+@media (max-width: 600px) {
+    .container {
+      flex-direction: column;
+    }
+}
