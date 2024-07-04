@@ -4,7 +4,7 @@
     @if(data.action === actionType.UPDATE_NAME){
       <mat-form-field>
         <mat-label>Nouveau Nom</mat-label>
-        <input matInput [(ngModel)]="name" />
+        <input matInput [(ngModel)]="name" required/>
       </mat-form-field>
     }
 </mat-dialog-content>

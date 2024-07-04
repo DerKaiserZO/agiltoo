@@ -992,3 +992,76 @@ export const user: Owner[] = [
     name: "Name 4"
   }
 ];
+
+export const USERS_DATA = [
+  {
+    id: 1,
+    name: "Alice Johnson",
+    email: "alice.johnson@gmail.com",
+    isActive: true,
+    roles: ["user", "admin"]
+  },
+  {
+    id: 2,
+    name: "Bob Smith",
+    email: "bob.smith@gmail.com",
+    isActive: true,
+    roles: ["user"]
+  },
+  {
+    id: 3,
+    name: "Carol White",
+    email: "carol.white@gmail.com",
+    isActive: false,
+    roles: ["user"]
+  },
+  {
+    id: 4,
+    name: "David Brown",
+    email: "david.brown@gmail.com",
+    isActive: true,
+    roles: ["user", "editor"]
+  },
+  {
+    id: 5,
+    name: "Eva Green",
+    email: "eva.green@gmail.com",
+    isActive: true,
+    roles: ["user"]
+  },
+  {
+    id: 6,
+    name: "Frank Black",
+    email: "frank.black@gmail.com",
+    isActive: false,
+    roles: ["user", "moderator"]
+  },
+  {
+    id: 7,
+    name: "Grace Adams",
+    email: "grace.adams@gmail.com",
+    isActive: true,
+    roles: ["user"]
+  },
+  {
+    id: 8,
+    name: "Hank Davis",
+    email: "hank.davis@gmail.com",
+    isActive: true,
+    roles: ["user"]
+  },
+  {
+    id: 9,
+    name: "Ivy Turner",
+    email: "ivy.turner@gmail.com",
+    isActive: false,
+    roles: ["user"]
+  },
+  {
+    id: 10,
+    name: "Jack Lee",
+    email: "jack.lee@gmail.com",
+    isActive: true,
+    roles: ["user", "admin"]
+  }
+];

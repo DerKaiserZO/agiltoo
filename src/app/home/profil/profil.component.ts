@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import { DialogService } from '../../utils/dialog.service';
 import { ActionComponent, ActionType } from '../../layout/shared/modals/action/action.component';
+import { UpdatePasswordComponent } from '../../layout/shared/modals/update-password/update-password.component';
 
 @Component({
   selector: 'app-profil',
@@ -27,6 +28,9 @@ export class ProfilComponent {
       action: ActionType.UPDATE_NAME,
       modalTitle : 'Modification du nom'
     })
+  }
+  onPasswordChange() {
+    this.dialogService.openDialog(UpdatePasswordComponent);
   }
 
 }
