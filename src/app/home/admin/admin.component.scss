@@ -1,6 +1,6 @@
 .content {
     padding: 16px;
-    max-width: 70rem;
+    max-width: 80rem;
     margin-left: auto;
     margin-right: auto;
 }
@@ -10,4 +10,16 @@
     flex-direction: column;
     gap: 16px;
     margin: 20px;
+}
+
+.actions-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.toggle-on{
+    color: green;
+}
+.toggle-off{
+    color: red;
 }
