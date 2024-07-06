@@ -63,6 +63,10 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "src/proxy.config.json",
+              "buildTarget": "AGILTOO-APP:build:development"
+          },
           "configurations": {
             "production": {
               "buildTarget": "AGILTOO-APP:build:production"

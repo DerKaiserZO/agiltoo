@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,7 @@ import { UpdatePasswordComponent } from '../../layout/shared/modals/update-passw
     MatIconModule,
     MatButtonModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './profil.component.html',
   styleUrl: './profil.component.scss'
 })

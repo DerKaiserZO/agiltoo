@@ -1,4 +1,3 @@
-<p>update-user-role works!</p>
 <h2 mat-dialog-title>{{data.modalTitle}}</h2>
 <mat-dialog-content>
     <p>{{ data.message }} </p>
@@ -8,7 +7,7 @@
         <input matInput [(ngModel)]="name" required/>
       </mat-form-field>
     } @else {
-        <!-- <mat-form-field class="example-chip-list">
+        <mat-form-field class="example-chip-list">
             <mat-label>Roles</mat-label>
             <mat-chip-grid #chipGrid aria-label="Fruit selection">
               @for (role of roles(); track $index) {
@@ -27,7 +26,6 @@
               [(ngModel)]="currentRole"
               [matChipInputFor]="chipGrid"
               [matAutocomplete]="auto"
-              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
               (matChipInputTokenEnd)="add($event)"
             />
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
@@ -35,10 +33,10 @@
                 <mat-option [value]="role">{{role}}</mat-option>
               }
             </mat-autocomplete>
-        </mat-form-field> -->
+        </mat-form-field>
     }
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button type="submit" cdkFocusInitial>Oui</button>
-  <button mat-button mat-dialog-close>Non</button>
+  <button mat-button (click)="onSavedRoles()" cdkFocusInitial>Valider</button>
+  <button mat-button mat-dialog-close>Annuler</button>
 </mat-dialog-actions>

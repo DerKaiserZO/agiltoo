@@ -1,0 +1,14 @@
+form {
+    display: flex;
+    flex-direction: column;
+}
+.info {
+    margin-top: 10px;
+}
+
+.spinner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

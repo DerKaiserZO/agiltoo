@@ -1,4 +1,4 @@
-import { Component, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -14,8 +14,9 @@ import { RouterLink } from '@angular/router';
     MatButtonModule,
     MatChipsModule,
     MatBadgeModule,
-    RouterLink
+    RouterLink,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

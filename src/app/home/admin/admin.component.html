@@ -49,7 +49,9 @@
                             </button>
                             <button mat-icon-button
                                 matTooltip="Modifier le role de l'utilisateur" 
-                                aria-label="Modifier le role de l'utilisateur">
+                                aria-label="Modifier le role de l'utilisateur"
+                                (click)="onRoleEdit(element)"
+                                >
                                 <mat-icon>admin_panel_settings</mat-icon>
                             </button>
                             <button 

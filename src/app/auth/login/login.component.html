@@ -1,14 +1,23 @@
 <app-card title="Login">
-    <form>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
             <mat-label>Email</mat-label>
-        <input matInput type="email" email required>
+        <input matInput type="email" formControlName="email" required>
         </mat-form-field>
             <mat-form-field appearance="fill">
         <mat-label>Mot de passe</mat-label>
-            <input matInput type="password" required>
-        </mat-form-field><br>
-        <button mat-raised-button type="submit">Se connecter</button>
+            <input matInput type="password" formControlName="password" required>
+        </mat-form-field>
+        @if (isFetching()) {
+            <span class="spinner">
+                <mat-spinner diameter="38"></mat-spinner>
+            </span>
+        } @else {
+            <button mat-raised-button type="submit">Se connecter</button>
+        }
+        <p class="info">
+            Pas de compte ? cliquer <a routerLink="/signup">ici</a>
+        </p>
     </form>
 </app-card>
   

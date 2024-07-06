@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, Signal, SimpleChanges, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, OnInit, Signal, SimpleChanges, computed, inject, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import { Item, ItemType } from '../../../layout/shared/items-list/item.model';
@@ -25,6 +25,7 @@ const pageSize = 10;
     ItemsListComponent,
     ItemDetailComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ticket.component.html',
   styleUrl: './ticket.component.scss'
 })

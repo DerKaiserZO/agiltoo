@@ -1,7 +1,7 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
+import { Component, computed, inject, model, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogConfig, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
@@ -17,13 +17,23 @@ export interface updateUserRoleModal {
   itemType?: string;
   modalTitle: string;
   message: string;
+  roles?: string[]
 }
 
-interface Role {
-  id: number;
-  name: string;
-}
+// interface Role {
+//   id: number;
+//   name: string;
+// }
 
+export const configUpdateRoleModal: MatDialogConfig = {
+  maxWidth: '30vw',
+  // maxHeight: '60vw',
+  width: '100%',
+  // height: '100%',
+  position: {
+    top: '69px'
+  }
+}
 
 @Component({
   selector: 'app-update-user-role',
@@ -45,48 +55,62 @@ interface Role {
   templateUrl: './update-user-role.component.html',
   styleUrl: './update-user-role.component.scss'
 })
-export class UpdateUserRoleComponent {
+export class UpdateUserRoleComponent implements OnInit{
   public data: updateUserRoleModal = inject(MAT_DIALOG_DATA);
   public updateType = UpdateType;
   name = signal('');
-  readonly roles = signal([]);
+  roles = signal<string[]>([]);
   readonly currentRole = model('');
-  readonly rolesData: Role[] = [];
+  readonly rolesData = ['user', 'admin'];
 
-  readonly filteredFruits = computed(() => {
+  readonly filteredRoles = computed(() => {
     const currentRole = this.currentRole().toLowerCase();
     return currentRole
-      ? this.rolesData.filter(role => role.name.toLowerCase().includes(currentRole))
+      ? this.rolesData.filter(role => role.toLowerCase().includes(currentRole))
       : this.rolesData.slice();
   });
 
-  // add(event: MatChipInputEvent): void {
-  //   const value = (event.value || '').trim();
+  ngOnInit(): void {
+    if(this.data.roles!.length) {
+      const initRolesData = this.data.roles!;
+      this.roles.update((roles) => [...roles, ...initRolesData])
+    }
+  }
 
-  //   if (value) {
-  //     this.roles.update(roles => [...roles, value]);
-  //   }
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
 
-  //   // Clear the input value
-  //   this.currentFruit.set('');
-  // }
+    if (value) {
+      const isAllReadyExisted = this.roles().find(role => role.toLowerCase().includes(value));
+      if(!isAllReadyExisted) return;
+      this.roles.update(roles => [...roles, value]);
+    }
+    this.currentRole.set('');
+  }
 
-  // remove(fruit: string): void {
-  //   this.fruits.update(fruits => {
-  //     const index = fruits.indexOf(fruit);
-  //     if (index < 0) {
-  //       return fruits;
-  //     }
+  remove(role: string): void {
+    this.roles.update(roles => {
+      const index = roles.indexOf(role);
+      if (index < 0) {
+        return roles;
+      }
 
-  //     fruits.splice(index, 1);
-  //     this.announcer.announce(`Removed ${fruit}`);
-  //     return [...fruits];
-  //   });
-  // }
+      roles.splice(index, 1);
+      return [...roles];
+    });
+  }
 
-  // selected(event: MatAutocompleteSelectedEvent): void {
-  //   this.fruits.update(fruits => [...fruits, event.option.viewValue]);
-  //   this.currentFruit.set('');
-  //   event.option.deselect();
-  // }
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const newValue = event.option.viewValue;
+    const isAllReadyExisted = this.roles().find(role => role.toLowerCase().includes(newValue));
+    if(!isAllReadyExisted) {
+      this.roles.update(roles => [...roles, event.option.viewValue]);      
+    }
+    this.currentRole.set('');
+    event.option.deselect();
+  }
+
+  onSavedRoles() {
+    console.log(this.roles());
+  }
 }

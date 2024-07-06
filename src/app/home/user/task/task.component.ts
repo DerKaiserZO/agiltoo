@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ItemDetailComponent } from '../../../layout/shared/item-detail/item-detail.component';
 import { ActivatedRouteSnapshot, ResolveFn, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     RouterLink
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })

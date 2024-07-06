@@ -1,0 +1,8 @@
+{
+  "/auth": {
+    "target": "https://api-recrutement-agiltoo.azurewebsites.net",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

@@ -1,0 +1,11 @@
+export const BASE_URL = 'https://api-recrutement-agiltoo.azurewebsites.net';
+export const BASE_AUTH = '/auth';
+export const BASE_API_USERS = '/api/user';
+export const BASE_API_PROJECT = '/api/project';
+export const BASE_API_TYPE = '/api/type';
+export const BASE_API_PRIORITY = '/api/priority';
+export const BASE_API_STATUS = '/api/status';
+export const BASE_API_TAG = '/api/tag';
+export const BASE_API_EPICLINK = '/api/epiclink';
+export const BASE_API_TICKET = '/api/ticket';
+export const BASE_API_TASK = '/api/task';

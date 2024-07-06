@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { ItemsListComponent } from '../../../layout/shared/items-list/items-list.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +18,7 @@ const dummytickets = tickets
     MatButtonModule, 
     MatPaginatorModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tickets-list.component.html',
   styleUrl: './tickets-list.component.scss'
 })
