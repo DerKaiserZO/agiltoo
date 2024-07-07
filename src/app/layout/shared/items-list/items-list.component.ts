@@ -11,6 +11,7 @@ import { TaskModalComponent, configTaksModal } from '../modals/task-modal/task-m
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActionComponent, ActionType } from '../modals/action/action.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export enum formAction {
   CREATE = "Create",
@@ -29,7 +30,8 @@ const BASE_URL = "/home/ticket"
     MatChipsModule,
     DatePipe,
     RouterLink, 
-    MatPaginatorModule 
+    MatPaginatorModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './items-list.component.html',
   styleUrl: './items-list.component.scss'
@@ -40,6 +42,7 @@ export class ItemsListComponent implements OnInit{
   pageEvent = input.required<PageEvent>();
   title = input<string>();
   itemType = input.required<ItemType>();
+  isLoadingContent = input<boolean>();
   private dialogService = inject(DialogService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
@@ -93,9 +96,11 @@ export class ItemsListComponent implements OnInit{
   }
 
   private setNewPagination(pageEvent: PageEvent){
-    const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
-    const endIndex = startIndex + pageEvent.pageSize;
-    this.paginatedData.set(this.items()!.slice(startIndex, endIndex));
+    if(this.items() && this.items()!.length) {
+      const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
+      const endIndex = startIndex + pageEvent.pageSize;
+      this.paginatedData.set(this.items()!.slice(startIndex, endIndex));
+    }
   }
 
   private initForm(item: Item): FormGroup {

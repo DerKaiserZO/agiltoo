@@ -1,4 +1,4 @@
-<app-nav [(isSideNavBarOpened)]="isSideNavBarOpened">
-    <app-header userName="Sory Ibrahima DANSOKHO" [(sideNavOpened)]="isSideNavBarOpened"/>
+<app-nav [(isSideNavBarOpened)]="isSideNavBarOpened" [userName]="userConnectedName()">
+    <app-header [userName]="userConnectedName()" [(sideNavOpened)]="isSideNavBarOpened"/>
     <router-outlet />
 </app-nav>

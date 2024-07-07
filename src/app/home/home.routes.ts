@@ -4,6 +4,7 @@ import { TicketsListComponent } from "./user/tickets-list/tickets-list.component
 import { TicketComponent, resolveTicket } from "./user/ticket/ticket.component";
 import { TaskComponent, resolveTaskDetail } from "./user/task/task.component";
 import { ProfilComponent } from "./profil/profil.component";
+import { connectedWithAdminRoleGuard, connectedWithUserRoleGuard } from "../utils/guards/connected-user.guard";
 
 export const routes: Routes = [
     {
@@ -13,6 +14,7 @@ export const routes: Routes = [
     {
         path:'ticket/:ticketId',
         component: TicketComponent,
+        canMatch: [connectedWithUserRoleGuard],
         resolve: {
             ticket : resolveTicket,
             // pageEvent: resolvePagination
@@ -21,16 +23,19 @@ export const routes: Routes = [
     {
         path:'ticket/:ticketId/task/:taskId',
         component: TaskComponent,
+        canMatch: [connectedWithUserRoleGuard],
         resolve: {
             task: resolveTaskDetail
         }
     },
     {
         path: 'profile',
-        component: ProfilComponent
+        component: ProfilComponent,
+        canMatch: [connectedWithUserRoleGuard],
     },
     {
         path: 'admin',
-        component: AdminComponent
+        component: AdminComponent,
+        canMatch: [connectedWithAdminRoleGuard]
     },
 ]

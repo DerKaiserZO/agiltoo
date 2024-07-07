@@ -8,6 +8,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../../utils/auth.service';
 import { LoginUser } from '../../utils/models/auth.model';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { UserAuthStore } from '../../utils/stores/auth.store';
 
 @Component({
   selector: 'app-login',
@@ -26,9 +27,10 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  readonly userAuthStore = inject(UserAuthStore);
+
   authService = inject(AuthService);
-  private destroyRef = inject(DestroyRef);
-  isFetching = signal(false);
+  isFetching = this.userAuthStore.isLoading;
   private router = inject(Router);
 
   loginForm = new FormGroup({
@@ -41,18 +43,6 @@ export class LoginComponent {
   });
 
   onSubmit(){
-    this.isFetching.set(true);
-    const subscription = this.authService.login(this.loginForm.value as LoginUser).subscribe({
-      error: () => {
-        this.isFetching.set(false);
-      },
-      complete: () => {
-        this.isFetching.set(false);
-        this.router.navigate(['/home'], { replaceUrl: true });
-      }
-    });
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+    this.userAuthStore.login(this.loginForm.value as LoginUser);
   }
 }

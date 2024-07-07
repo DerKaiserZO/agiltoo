@@ -8,10 +8,11 @@
             </div>
             <div class="item drawer-icon">
                 <img src="icon-male-user.png" alt="">
-                <p>Sory Ibrahima DANSOKHO</p>
+                <p>{{ userName() }}</p>
             </div>
             <mat-divider></mat-divider>
             <div class="item large-item">
+            @if (!isAdmin()) {
                 <mat-list role="list">
                     <mat-list-item role="listitem">
                         <a routerLink="profile" mat-button extended>
@@ -20,6 +21,7 @@
                         </a>
                     </mat-list-item>
                 </mat-list>
+            }
             </div>
             <mat-divider></mat-divider>
             <div class="item drawer-button-center">
