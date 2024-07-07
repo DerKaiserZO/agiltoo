@@ -3,10 +3,11 @@ import { inject, Injectable } from '@angular/core';
 import { LoginUser } from './models/auth.model';
 import { UserConnected } from './models/user-connected.model';
 import { BASE_API_EPICLINK, BASE_API_PRIORITY, BASE_API_PROJECT, BASE_API_STATUS, BASE_API_TAG, BASE_API_TYPE, BASE_API_USERS, BASE_AUTH } from './url-endpoints';
-import { catchError, concatMap, Observable, of, throwError, toArray } from 'rxjs';
+import { catchError, concatMap, distinctUntilChanged, Observable, of, throwError, toArray } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 import { User } from '../home/admin/user.model';
 import { DataConfigType } from './stores/data-config.store';
+import { Owner } from '../layout/shared/items-list/item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +46,7 @@ export class AuthService {
         )
       )
     )
-  }
+  };
 
   getDataConfig() {
     return this.dataConfigLink$.pipe(
@@ -59,6 +60,21 @@ export class AuthService {
         )
       ),
       toArray()
+    )
+  };
+
+  getResponsibles() {
+    return this.httpClient.get<Owner[]>(`${BASE_API_USERS}`)
+    .pipe(
+      distinctUntilChanged(),
+      catchError(
+        (error) => throwError (
+          () => {
+            this.snackbarService.openSnackBar('Impossible de récupérer les données');
+            return new Error('Impossible de récupérer les données');
+          }
+        )
+      )
     )
   }
 }

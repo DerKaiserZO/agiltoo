@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogConfig, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
@@ -9,6 +9,8 @@ import { EpicLink, ItemType, Owner, Priority, Project, Status, Tag, Type } from 
 import { epic, priority, projects, status, tag, typeItem, user } from '../../../../dummy';
 import { formAction } from '../../items-list/items-list.component';
 import { SnackbarService } from '../../../../utils/snackbar.service';
+import { dataConfigStore } from '../../../../utils/stores/data-config.store';
+import { AuthService } from '../../../../utils/auth.service';
 
 export const configTaksModal: MatDialogConfig = {
   maxWidth: '50vw',
@@ -28,7 +30,9 @@ const ticketFormInitialized = new FormGroup({
   statusId: new FormControl('', Validators.required),
   priorityId: new FormControl('', Validators.required),
   comment: new FormControl(''),
-  // storyPoint: new FormControl('', Validators.required),
+  storyPoint: new FormControl(0, {
+    validators: [Validators.required, Validators.min(0)]
+  }),
   tagId: new FormControl('', Validators.required),
   epicLinkId: new FormControl('', Validators.required),
   responsibleId: new FormControl('')
@@ -40,7 +44,9 @@ const taskFormInitialized = new FormGroup({
   statusId: new FormControl('', Validators.required),
   priorityId: new FormControl('', Validators.required),
   comment: new FormControl(''),
-  // storyPoint: new FormControl('', Validators.required),
+  storyPoint: new FormControl(0, {
+    validators: [Validators.required, Validators.min(0)]
+  }),
   responsibleId: new FormControl('')
 });
 
@@ -61,9 +67,20 @@ const taskFormInitialized = new FormGroup({
   templateUrl: './task-modal.component.html',
   styleUrl: './task-modal.component.scss'
 })
-export class TaskModalComponent {
+export class TaskModalComponent implements OnInit{
   public data: { itemType: ItemType, action: formAction, formData: FormGroup} = inject(MAT_DIALOG_DATA);
   private snackbar = inject(SnackbarService);
+  private dataConfigStore = inject(dataConfigStore);
+  private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
+
+  projects: Project[] = [];
+  types: Type[] = [];
+  priorities: Priority[] = [];
+  statuses: Status[] = [];
+  tags: Tag[] = [];
+  epics: EpicLink[] = [];
+  users: Owner[] = [];
 
   get Title() {
     const title = this.data.action === formAction.CREATE ? 'Création ' : 'Modification ';
@@ -72,18 +89,20 @@ export class TaskModalComponent {
   }
 
   itemForm = this.initForm();
-  
-  projects: Project[] = projects;
-  types: Type[] = typeItem;
-  priorities: Priority[] = priority;
-  // storyPoints: {id: number; name: string}[] = [];
-  statuses: Status[] = status;
-  tags: Tag[] = tag;
-  epics: EpicLink[] = epic;
-  users: Owner[] = user;
 
+  ngOnInit(): void {
+    this.projects = this.dataConfigStore.projects();
+    this.types = this.dataConfigStore.types();
+    this.priorities = this.dataConfigStore.priorities();
+    this.statuses = this.dataConfigStore.status();
+    this.tags = this.dataConfigStore.tags();
+    this.epics = this.dataConfigStore.epics();
+    const subscription = this.authService.getResponsibles().subscribe((results) => this.users = results);
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  }
+  
   onSubmit() {
-    console.log("form", this.itemForm);
+    console.log('submitted', this.itemForm.value)
     setTimeout(() => {
       this.initForm().reset();
       this.snackbar.openSnackBar('ok');

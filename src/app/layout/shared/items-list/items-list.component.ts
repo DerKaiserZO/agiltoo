@@ -1,11 +1,11 @@
-import { Component, OnInit, inject, input, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Item, ItemType, Task } from './item.model';
 import {MatChipsModule} from '@angular/material/chips';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DialogService } from '../../../utils/dialog.service';
 import { TaskModalComponent, configTaksModal } from '../modals/task-modal/task-modal.component';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -36,23 +36,36 @@ const BASE_URL = "/home/ticket"
   templateUrl: './items-list.component.html',
   styleUrl: './items-list.component.scss'
 })
-export class ItemsListComponent implements OnInit{
+export class ItemsListComponent {
+  private dialogService = inject(DialogService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
   items = input<Item[]>();
   paginatedData = signal<Item[]>([]);
   pageEvent = input.required<PageEvent>();
   title = input<string>();
   itemType = input.required<ItemType>();
   isLoadingContent = input<boolean>();
-  private dialogService = inject(DialogService);
-  private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
+  error = input<string>('');
   private url = '';
 
-  ngOnInit(): void {
-    if(this.pageEvent()){
-      this.setNewPagination(this.pageEvent());
-    }
+  constructor() {
+    effect(() => {
+      if(this.pageEvent()){
+        this.setNewPagination(this.pageEvent());
+      }
+    },{
+      allowSignalWrites: true
+    })
   }
+
+    // ngOnInit(): void {
+    //   console.log('items', this.items())
+    //   if(this.pageEvent()){
+    //     this.setNewPagination(this.pageEvent());
+    //   }
+    // }
+
 
   deleteItem(itemToDelete: Item) {
     this.dialogService.openDialog(ActionComponent, undefined, {
@@ -100,6 +113,7 @@ export class ItemsListComponent implements OnInit{
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
       this.paginatedData.set(this.items()!.slice(startIndex, endIndex));
+      console.log('paginateData', this.paginatedData())
     }
   }
 

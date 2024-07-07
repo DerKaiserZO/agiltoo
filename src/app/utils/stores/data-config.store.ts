@@ -67,7 +67,7 @@ export const dataConfigStore = signalStore(
             ),
             persistStore(): void {
                 const storeObjectToPersist: DataConfig = {
-                    projects: store.status(),
+                    projects: store.projects(),
                     types: store.types(),
                     priorities: store.priorities(),
                     status: store.status(),
