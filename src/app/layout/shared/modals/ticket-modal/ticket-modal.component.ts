@@ -23,20 +23,25 @@ export const configTaksModal: MatDialogConfig = {
   }
 }
 
-const taskFormInitialized = new FormGroup({
+const ticketFormInitialized = new FormGroup({
+  projectId: new FormControl('', Validators.required),
+  typeId: new FormControl('', Validators.required),
   title: new FormControl('', Validators.required),
   description: new FormControl(''),
   statusId: new FormControl('', Validators.required),
   priorityId: new FormControl('', Validators.required),
-  comment: new FormControl('', Validators.required),
+  comment: new FormControl(''),
   storyPoint: new FormControl(0, {
     validators: [Validators.required, Validators.min(0)]
   }),
+  tagId: new FormControl('', Validators.required),
+  epicLinkId: new FormControl('', Validators.required),
   responsibleId: new FormControl(null)
 });
 
+
 @Component({
-  selector: 'app-task-modal',
+  selector: 'app-ticket-modal',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -50,13 +55,13 @@ const taskFormInitialized = new FormGroup({
     MatDialogContent,
     MatProgressSpinnerModule
   ],
-  templateUrl: './task-modal.component.html',
-  styleUrl: './task-modal.component.scss'
+  templateUrl: './ticket-modal.component.html',
+  styleUrl: './ticket-modal.component.scss'
 })
-export class TaskModalComponent implements OnInit{
-  public data: { action: formAction, formData: FormGroup,ticketId: number ,itemId?: number} = inject(MAT_DIALOG_DATA);
+export class TicketModalComponent implements OnInit{
+  public data: { action: formAction, formData: FormGroup, itemId?: number} = inject(MAT_DIALOG_DATA);
   
-  private dialogRef = inject(MatDialogRef<TaskModalComponent>);
+  private dialogRef = inject(MatDialogRef<TicketModalComponent>);
   private snackbar = inject(SnackbarService);
   private dataConfigStore = inject(dataConfigStore);
   private authService = inject(AuthService);
@@ -65,48 +70,73 @@ export class TaskModalComponent implements OnInit{
   isLoading = signal<boolean>(false);
 
   itemForm = this.initForm();
+  projects: Project[] = [];
   types: Type[] = [];
   priorities: Priority[] = [];
   statuses: Status[] = [];
+  tags: Tag[] = [];
+  epics: EpicLink[] = [];
   users: Owner[] = [];
 
   get Title() {
     const title = this.data.action === formAction.CREATE ? 'Création ' : 'Modification ';
-    return `${title} Tâches`;
+    return `${title} Ticket` ;
   }
 
 
   ngOnInit(): void {
+    this.projects = this.dataConfigStore.projects();
     this.types = this.dataConfigStore.types();
     this.priorities = this.dataConfigStore.priorities();
     this.statuses = this.dataConfigStore.status();
+    this.tags = this.dataConfigStore.tags();
+    this.epics = this.dataConfigStore.epics();
     const subscription = this.authService.getResponsibles().subscribe((results) => this.users = results);
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
   
   onSubmit() {
     this.isLoading.set(true);
-    this.taskLogic();    
+    this.ticketLogic();
+    
   }
 
   private initForm(): FormGroup {
     if (this.data.action === formAction.UPDATE) {
       return this.data.formData;
     }
-    return taskFormInitialized;
+    return ticketFormInitialized;
   }
 
-  private taskLogic() {
+  private ticketLogic() {
     if(this.data.action === formAction.UPDATE) {
-      this.updateTask();
+      this.updateTicket();
     } else {
-      this.createTask();
+      this.createTicket();
     }
   }
 
+  private createTicket() {
+    const subscription = this.userService.createTicket(this.itemForm.value)
+    .subscribe({
+      next: () => {
+        this.snackbar.openSnackBar('Création effectuée avec succés');
+        this.initForm().reset();
+      },
+      error: (error: Error) => {
+        this.snackbar.openSnackBar(error.message, true);
+        this.isLoading.set(false);
+      },
+      complete: () => {
+        this.isLoading.set(false);
+        this.dialogRef.close();
+      }
+    });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  }
 
-  private updateTask() {
-    const subscription = this.userService.updateTask(this.data.itemId!, this.itemForm.value)
+  private updateTicket() {
+    const subscription = this.userService.updateTicket(this.data.itemId!, this.itemForm.value)
     .subscribe({
       next: (updatedTicket) => {
         this.snackbar.openSnackBar('Modification effectuée avec succés');
@@ -124,22 +154,4 @@ export class TaskModalComponent implements OnInit{
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
   
-  private createTask() {
-    const subscription = this.userService.createTask(this.data.ticketId, this.itemForm.value)
-    .subscribe({
-      next: (createdTask) => {
-        this.snackbar.openSnackBar('Création effectuée avec succés');
-        this.initForm().reset();
-        this.dialogRef.close(createdTask);
-      },
-      error: (error: Error) => {
-        this.snackbar.openSnackBar(error.message, true);
-        this.isLoading.set(false);
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      }
-    });
-    this.destroyRef.onDestroy(() => subscription.unsubscribe());
-  }
 }

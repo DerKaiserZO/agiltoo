@@ -4,12 +4,18 @@
     </div>
 </div>
 <div class="container">
-    <div class="column">
-        <app-item-detail [item]="ticket()" [itemType]="itemTypeTicket"/>
-    </div>
-    <div class="column">
-        <mat-card appearance="outlined">
-            <app-items-list [items]="ticket().tasks" title="Tâches" [itemType]="itemTypeTask" [pageEvent]="pageEvent!"/>
-        </mat-card>
-    </div>
+    @if(isLoading()){
+        <span class="spinner">
+            <mat-spinner></mat-spinner>
+        </span>
+    } @else { 
+        <div class="column">
+            <app-item-detail [(item)]="ticket" [itemType]="itemTypeTicket"/>
+        </div>
+        <div class="column">
+            <mat-card appearance="outlined">
+                <app-items-list [(items)]="tasks" title="Tâches" [itemType]="itemTypeTask" [pageEvent]="pageEvent!"/>
+            </mat-card>
+        </div>
+    }
 </div>

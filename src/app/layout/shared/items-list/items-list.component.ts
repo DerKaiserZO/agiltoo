@@ -1,8 +1,8 @@
-import { Component, OnInit, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, model, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Item, ItemType, Task } from './item.model';
+import { ItemType, Task } from '../../../utils/models/item.model';
 import {MatChipsModule} from '@angular/material/chips';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -12,6 +12,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActionComponent, ActionType } from '../modals/action/action.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TicketModalComponent } from '../modals/ticket-modal/ticket-modal.component';
+import { ComponentType } from '@angular/cdk/portal';
 
 export enum formAction {
   CREATE = "Create",
@@ -40,8 +42,8 @@ export class ItemsListComponent {
   private dialogService = inject(DialogService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
-  items = input<Item[]>();
-  paginatedData = signal<Item[]>([]);
+  items = model<Task[]>();
+  paginatedData = signal<Task[]>([]);
   pageEvent = input.required<PageEvent>();
   title = input<string>();
   itemType = input.required<ItemType>();
@@ -67,31 +69,46 @@ export class ItemsListComponent {
     // }
 
 
-  deleteItem(itemToDelete: Item) {
-    this.dialogService.openDialog(ActionComponent, undefined, {
+  deleteItem(itemToDelete: Task) {
+    let dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
       itemType : this.itemType(),
       message : `Souhaitez-vous supprimer ${itemToDelete.title}`,
       action: ActionType.SUPPRIMER,
-      modalTitle : `${ActionType.SUPPRIMER} ${this.itemType()}`
+      modalTitle : `${ActionType.SUPPRIMER} ${this.itemType()}`,
+      itemToDelete: itemToDelete,
+    });
+    dialogRef.afterClosed().subscribe((result: Task) => {
+      if(this.itemType() === ItemType.TASK && result) {
+        this.items.update((oldValues) => {
+          return oldValues!.filter((ticket) => ticket.id !== result.id);
+        });
+      }
     })
   };
 
-  updateItemDetails(itemToUpdate: Item) {
-    console.log('item', itemToUpdate.project)
-    this.dialogService.openDialog(TaskModalComponent, configTaksModal,  {
+  updateItemDetails(itemToUpdate: Task) {
+    let dialogRef = this.dialogService.openDialog(TaskModalComponent, configTaksModal,  {
       itemType: this.itemType(),
       action: formAction.UPDATE,
-      formData: this.initForm(itemToUpdate)
+      formData: this.initForm(itemToUpdate),
+      itemId: itemToUpdate.id
     });
+    dialogRef.afterClosed().subscribe((result: Task) => {
+      if(this.itemType() === ItemType.TASK && result) {
+        this.items.update((oldValues) => {
+          return oldValues!.map((ticket) => {
+            if(ticket.id === result.id){
+              return { ...ticket, ...result };
+            }
+            return ticket;
+          });
+        });
+      }
+    })
   }
 
-  getDetails(item: Item) {
-    const ticketId = this.activatedRoute.snapshot.paramMap.get('ticketId');
-    if(!ticketId){
-      this.url = `${BASE_URL}/${item.id}`
-    } else {
-      this.url = `${BASE_URL}/${ticketId}`.concat(this.itemType() === ItemType.TASK ? `/task/${item.id}` : ``);
-    }
+  getDetails(item: Task) {
+    this.url = this.getCurrentUrl(item);
     this.router.navigateByUrl(this.url);
   }
   
@@ -102,9 +119,16 @@ export class ItemsListComponent {
   }
 
   add() {
-    this.dialogService.openDialog(TaskModalComponent, configTaksModal, {
+    const ticketId = this.activatedRoute.snapshot.paramMap.get('ticketId');
+    let dialogRef = this.dialogService.openDialog(TaskModalComponent, configTaksModal, {
       itemType: this.itemType(),
-      action: formAction.CREATE
+      action: formAction.CREATE,
+      ...(this.itemType() === ItemType.TASK && {ticketId} )
+    });
+    dialogRef.afterClosed().subscribe((result: Task) => {
+      if(this.itemType() === ItemType.TASK && result) {
+        this.items.update((oldValues) => [result, ...oldValues!])
+      }
     });
   }
 
@@ -113,35 +137,27 @@ export class ItemsListComponent {
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
       this.paginatedData.set(this.items()!.slice(startIndex, endIndex));
-      console.log('paginateData', this.paginatedData())
     }
   }
 
-  private initForm(item: Item): FormGroup {
-    if(this.itemType() === ItemType.TICKET) {
-      return new FormGroup({
-        projectId: new FormControl(item.project!.id, Validators.required),
-        typeId: new FormControl(item.type!.id, Validators.required),
-        title: new FormControl(item.title, Validators.required),
-        description: new FormControl(item.description),
-        statusId: new FormControl(item.status.id, Validators.required),
-        priorityId: new FormControl(item.priority.id, Validators.required),
-        comment: new FormControl(item.comment),
-        // storyPoint: new FormControl(item., Validators.required),
-        tagId: new FormControl(item.tag!.id, Validators.required),
-        epicLinkId: new FormControl(item.epicLink!.id, Validators.required),
-        responsibleId: new FormControl(item.responsible?.id)
-      })
+  private initForm(item: Task): FormGroup {
+    return new FormGroup({
+      title: new FormControl(item.title, Validators.required),
+      description: new FormControl(item.description),
+      statusId: new FormControl(item.status.id, Validators.required),
+      priorityId: new FormControl(item.priority.id, Validators.required),
+      comment: new FormControl(item.comment, Validators.required),
+      storyPoint: new FormControl(item.storyPoint, Validators.required),
+      responsibleId: new FormControl(item.responsible?.id, Validators.required)
+    })
+  }
+  
+  private getCurrentUrl(item: Task) {
+    const ticketId = this.activatedRoute.snapshot.paramMap.get('ticketId');
+    if(!ticketId){
+     return `${BASE_URL}/${item.id}`
     } else {
-      return new FormGroup({
-        title: new FormControl(item.title, Validators.required),
-        description: new FormControl(item.description),
-        statusId: new FormControl(item.status.id, Validators.required),
-        priorityId: new FormControl(item.priority.id, Validators.required),
-        comment: new FormControl(item.comment),
-        // storyPoint: new FormControl(item., Validators.required),
-        responsibleId: new FormControl(item.responsible?.id)
-      })
+      return `${BASE_URL}/${ticketId}`.concat(this.itemType() === ItemType.TASK ? `/task/${item.id}` : '');
     }
   }
 }

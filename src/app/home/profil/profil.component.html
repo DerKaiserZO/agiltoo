@@ -8,7 +8,7 @@
                         <span class="info-list-role">Nom:</span>
                     </div>
                     <div matListItemLine>
-                        Sory Ibrahima DANSOKHO
+                        {{ currentLoggedUser()!.name }}
                     </div>
                     <div matListItemMeta>
                         <button mat-icon-button (click)="onNameEdit()">
@@ -21,7 +21,7 @@
                         <span class="info-list-role">Email:</span>
                     </div>
                     <div matListItemLine>
-                        sdansokho91&#64;live.fr
+                        {{ currentLoggedUser()!.email }}
                     </div>
                 </mat-list-item>
                 <mat-list-item role="info">
@@ -29,7 +29,7 @@
                         <span class="info-list-role">Rôles:</span>
                     </div>
                     <div matListItemLine>
-                        user-admin
+                        {{ currentLoggedUser()!.roles }}
                     </div>
                 </mat-list-item>
             </mat-list>

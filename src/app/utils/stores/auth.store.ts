@@ -90,6 +90,10 @@ export const UserAuthStore = signalStore(
                 if(persitedStore) localStorage.removeItem(localStorageKey);
                 router.navigate(['/login'], { replaceUrl: true });
             },
+            upDateUserAuth(userAuthNewData : UserInfos): void {
+                patchState(store, {userAuth : userAuthNewData});
+                this.persistStore();
+            }
         }
     }),
     withHooks({

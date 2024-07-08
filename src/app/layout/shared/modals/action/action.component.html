@@ -8,7 +8,13 @@
       </mat-form-field>
     }
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button (click)="submit()">Oui</button>
-  <button mat-button mat-dialog-close>Non</button>
-</mat-dialog-actions>
+@if (isLoading()) {
+  <span class="spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </span>
+} @else {
+  <mat-dialog-actions>
+    <button mat-button (click)="submit()">Oui</button>
+    <button mat-button mat-dialog-close>Non</button>
+  </mat-dialog-actions>
+}

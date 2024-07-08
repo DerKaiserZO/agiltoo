@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ItemDetailComponent } from '../../../layout/shared/item-detail/item-detail.component';
-import { ActivatedRouteSnapshot, ResolveFn, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
-import { Item, ItemType } from '../../../layout/shared/items-list/item.model';
-import { tickets } from '../../../dummy';
+import { ActivatedRoute, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
+import { Task, ItemType } from '../../../utils/models/item.model';
 import { MatButtonModule } from '@angular/material/button';
+import { UserService } from '../../../utils/user.service';
+import { SnackbarService } from '../../../utils/snackbar.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-task',
@@ -13,36 +15,39 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule, 
     ItemDetailComponent,
     MatButtonModule,
-    RouterLink
+    RouterLink,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })
 export class TaskComponent implements OnInit {
-  task = input<Item>();
-  router = inject(Router)
-  itemTypeTicket = ItemType.TASK;
+  task?:Task;
+  private router = inject(Router);
+  private userService = inject(UserService);
+  private activatedRoute = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+  private snackbar = inject(SnackbarService);
+  itemTypeTask = ItemType.TASK;
+  isLoading = signal<boolean>(false);
+
 
   ngOnInit(): void {
-    if(!this.task()) {
-      this.router.navigateByUrl('not-found', {
-        replaceUrl: true
-      });
-      return;
-    }
+    this.isLoading.set(true);
+    const subscription = this.userService.getOneTask(+this.activatedRoute.snapshot.paramMap.get('taskId')!)
+    .subscribe({
+      next: (result) => {
+        this.task = result;
+      },
+      error: (error) => {
+        this.snackbar.openSnackBar(error.message, true);
+        this.router.navigateByUrl('not-found', {
+          replaceUrl: true
+        });
+      },
+      complete: () => this.isLoading.set(false)
+    })
+    this.destroyRef.onDestroy(() => subscription.unsubscribe())
   }
-}
-
-
-export const resolveTaskDetail: ResolveFn<Item | undefined> = (
-  activatedRoute: ActivatedRouteSnapshot,
-  routerState: RouterStateSnapshot
-) => {
-  const dummiesTickets = tickets;
-  const ticketToShow = dummiesTickets.find((ticket) => ticket.id === +activatedRoute.paramMap.get('ticketId')!);
-  if(!ticketToShow) return undefined;
-  const taskToShow = ticketToShow.tasks?.find((task) => task.id === +activatedRoute.paramMap.get('taskId')!);
-  if(!taskToShow) return undefined;
-  return taskToShow;
 }

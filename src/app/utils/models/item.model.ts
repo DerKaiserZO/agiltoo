@@ -33,7 +33,7 @@ export interface Project {
     name: string;
   }
   
-  export interface Item {
+  export interface Ticket {
     id: number;
     title: string;
     description: string;
@@ -45,14 +45,34 @@ export interface Project {
     responsible: Owner | null;
     createdOn: string;
     updatedOn: string;
-    project?: Project;
-    type?: Type;
-    tag?: Tag;
-    epicLink?: EpicLink;
-    tasks?: Item[];
+    project: Project;
+    type: Type;
+    tag: Tag;
+    epicLink: EpicLink;
+    tasks: Task[];
 }
 
-export type Task = Omit<Item, 'project' | 'type' | 'tag' | 'epicLink' | 'tasks'>
+
+export interface Item {
+  id: number;
+  title: string;
+  description: string;
+  comment: string;
+  storyPoint: number;
+  priority: Priority;
+  status: Status;
+  owner: Owner;
+  responsible: Owner | null;
+  createdOn: string;
+  updatedOn: string;
+  project?: Project;
+  type?: Type;
+  tag?: Tag;
+  epicLink?: EpicLink;
+  tasks?: Task[];
+}
+
+export type Task = Omit<Ticket, 'project' | 'type' | 'tag' | 'epicLink' | 'tasks'>
 
 export enum ItemType {
   TICKET = 'Ticket',

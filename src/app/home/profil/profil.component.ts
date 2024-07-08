@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,6 +6,8 @@ import {MatListModule} from '@angular/material/list';
 import { DialogService } from '../../utils/dialog.service';
 import { ActionComponent, ActionType } from '../../layout/shared/modals/action/action.component';
 import { UpdatePasswordComponent } from '../../layout/shared/modals/update-password/update-password.component';
+import { UserAuthStore } from '../../utils/stores/auth.store';
+import { UserInfos } from '../../utils/models/user-connected.model';
 
 @Component({
   selector: 'app-profil',
@@ -22,6 +24,9 @@ import { UpdatePasswordComponent } from '../../layout/shared/modals/update-passw
 })
 export class ProfilComponent {
   private dialogService = inject(DialogService);
+  userAuthStore = inject(UserAuthStore);
+  currentLoggedUser = this.userAuthStore.userAuth!;
+  
 
   onNameEdit() {
     this.dialogService.openDialog(ActionComponent, undefined, {
@@ -30,6 +35,7 @@ export class ProfilComponent {
       modalTitle : 'Modification du nom'
     })
   }
+
   onPasswordChange() {
     this.dialogService.openDialog(UpdatePasswordComponent);
   }

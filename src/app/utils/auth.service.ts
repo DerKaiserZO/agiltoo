@@ -7,7 +7,7 @@ import { catchError, concatMap, distinctUntilChanged, Observable, of, throwError
 import { SnackbarService } from './snackbar.service';
 import { User } from '../home/admin/user.model';
 import { DataConfigType } from './stores/data-config.store';
-import { Owner } from '../layout/shared/items-list/item.model';
+import { Owner } from './models/item.model';
 
 @Injectable({
   providedIn: 'root'

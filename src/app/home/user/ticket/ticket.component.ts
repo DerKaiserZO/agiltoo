@@ -1,17 +1,39 @@
-import { ChangeDetectionStrategy, Component, OnChanges, OnInit, Signal, SimpleChanges, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, effect, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
-import { Item, ItemType } from '../../../layout/shared/items-list/item.model';
-import { ActivatedRouteSnapshot, ResolveFn, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
-import { tickets } from '../../../dummy';
+import { ItemType, Task, Ticket } from '../../../utils/models/item.model';
+import { ActivatedRoute, ActivatedRouteSnapshot, ResolveFn, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ItemsListComponent } from '../../../layout/shared/items-list/items-list.component';
 import { PageEvent } from '@angular/material/paginator';
 import { ItemDetailComponent } from '../../../layout/shared/item-detail/item-detail.component';
+import { UserService } from '../../../utils/user.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SnackbarService } from '../../../utils/snackbar.service';
 
 const pageSize = 10;
+
+const initItem = {
+  id: 0,
+  title: '',
+  description: '',
+  comment: '',
+  storyPoint: 0,
+  priority: '',
+  status: '',
+  owner: '',
+  responsible: '',
+  createdOn: '',
+  updatedOn: '',
+  project: '',
+  type: '',
+  tag: '',
+  epicLink: '',
+  tasks: [],
+}
 @Component({
   selector: 'app-ticket',
   standalone: true,
@@ -23,51 +45,47 @@ const pageSize = 10;
     MatButtonModule,
     RouterLink,
     ItemsListComponent,
-    ItemDetailComponent
+    ItemDetailComponent,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ticket.component.html',
   styleUrl: './ticket.component.scss'
 })
 export class TicketComponent implements OnInit{
-  ticket = input.required<Item>();
   itemTypeTicket = ItemType.TICKET;
   itemTypeTask = ItemType.TASK;
   pageEvent:PageEvent | undefined;
-  private router = inject(Router);
+  private userService = inject(UserService);
+  private activatedRoute = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+  private snackbar = inject(SnackbarService);
+  router = inject(Router);
+  private ticketId = this.activatedRoute.snapshot.paramMap.get('ticketId');
+  ticket?:Ticket;
+  tasks: Task[] = [];
+  isLoading = signal<boolean>(false);
 
   ngOnInit(): void {
-    if(!this.ticket()) {
-      this.router.navigateByUrl('not-found', {
-        replaceUrl: true
-      });
-      return;
-    }
-    if(this.ticket().tasks) {
-      const tasksLength = this.ticket().tasks!.length;
-      this.pageEvent = {pageIndex: 0, pageSize: pageSize, length: tasksLength};
-    }
+    this.isLoading.set(true);
+    const subscription = this.userService.getOneTicket(+this.ticketId!)
+    .subscribe({
+      next: (result) => {
+        this.ticket = result;
+        this.tasks = result.tasks!;
+        this.pageEvent = {pageIndex: 0, pageSize: pageSize, length: this.tasks!.length};
+      },
+      error: (error) => {
+        this.snackbar.openSnackBar(error.message, true);
+        this.router.navigateByUrl('not-found', {
+          replaceUrl: true
+        });
+      },
+      complete: () => this.isLoading.set(false)
+    });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe())
   }
 
 }
 
-export const resolveTicket: ResolveFn<Item | undefined> = (
-  activatedRoute: ActivatedRouteSnapshot,
-  routerState: RouterStateSnapshot
-) => {
-  const dummiesTickets = tickets;
-  const ticketToShow = dummiesTickets.find((ticket) => ticket.id === +activatedRoute.paramMap.get('ticketId')!);
-  if(!ticketToShow) return undefined;
-  return ticketToShow;
-}
-
-
-// export const resolvePagination: ResolveFn<PageEvent> = (
-//   activatedRoute: ActivatedRouteSnapshot,
-//   routerState: RouterStateSnapshot
-// ) => {
-//   const ticket = resolveTicket(activatedRoute, routerState) as (Item | undefined);
-//   const tasksLength = ticket ? ticket.tasks?.length : 0;
-//   return {pageIndex: 0, pageSize: pageSize, length: tasksLength!};
-// }
 

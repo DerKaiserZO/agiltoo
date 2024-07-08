@@ -4,7 +4,13 @@
     </div>
 </div>
 <div class="content">
-    <mat-card appearance="outlined">
-        <app-item-detail [item]="task()!" [itemType]="itemTypeTicket"/>
-    </mat-card>
+    @if(isLoading()){
+        <span class="spinner">
+            <mat-spinner></mat-spinner>
+        </span>
+    } @else { 
+        <mat-card appearance="outlined">
+            <app-item-detail [item]="task!" [itemType]="itemTypeTask"/>
+        </mat-card>
+}
 </div>
