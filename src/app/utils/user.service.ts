@@ -31,6 +31,19 @@ export class UserService {
       )
     }
 
+    updateUserPassword(newPassword: string) {
+      return this.httpClient.patch<User>(`${BASE_API_USERS}/change/password/${newPassword}`, {})
+      .pipe(
+        catchError(
+          (error) => throwError (
+            () => {
+              return new Error('Impossible de modifier le mot de passe');
+            }
+          )
+        ),
+      )
+    }
+
     getTickets() {
         return this.httpClient.get<{ tickets: Ticket[]}>(`${BASE_API_TICKET}`)
         .pipe(
