@@ -44,6 +44,17 @@ export class UserService {
       )
     }
 
+    loadUsers() {
+      return this.httpClient.get<User[]>(`${BASE_API_USERS}/complet`)
+      .pipe(catchError(
+        (error) => throwError (
+          () => {
+            return new Error('Impossible de récupérer les données');
+          }
+        )
+      ),)
+    }
+
     getTickets() {
         return this.httpClient.get<{ tickets: Ticket[]}>(`${BASE_API_TICKET}`)
         .pipe(

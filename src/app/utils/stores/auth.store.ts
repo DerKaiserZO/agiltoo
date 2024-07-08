@@ -16,22 +16,28 @@ type UserAuth = {
     accessToken: string;
     isLoading: boolean;
     isLoggedIn: boolean;
+    isAdmin: boolean;
+    roles: string[];
 }
 
 const initialState: UserAuth = {
     userAuth: undefined,
     accessToken: '',
     isLoading: false,
-    isLoggedIn: false
+    isLoggedIn: false,
+    isAdmin: false,
+    roles: []
 }
 
 export const UserAuthStore = signalStore(
     { providedIn: 'root'},
     withState(initialState),
-    withComputed(({ accessToken, userAuth }) => ({
+    withComputed(({ accessToken, userAuth, isLoggedIn, isAdmin, roles }) => ({
         getAccesToken: computed(() => accessToken()),
         getUserConnectedName: computed(() => userAuth()!.name),
-        getUserConnectedRole: computed(() => userAuth()!.roles)
+        getUserConnectedRole: computed(() => roles()),
+        checkIfIsUserConnected: computed(() => isLoggedIn()),
+        checkIfIsUserIsAdmin: computed(() => isAdmin()),
     })),
     withMethods((store) => {
         const authService = inject(AuthService);
@@ -44,12 +50,15 @@ export const UserAuthStore = signalStore(
                     switchMap((loginUser) => {
                         return authService.login(loginUser).pipe(
                             tapResponse({
-                                next: (userConnectd) => {
+                                next: (userConnected) => {
                                     patchState(store, {
-                                        isLoggedIn: true, accessToken: userConnectd.accessToken, isLoading: false
+                                        isLoggedIn: true, 
+                                        accessToken: userConnected.accessToken, 
+                                        isLoading: false,
+                                        roles: userConnected.roles
                                     });
-
-                                    if(userConnectd.roles.includes('admin')) {
+                                    if(userConnected.roles.includes('admin') || (userConnected.roles.includes('user') && userConnected.roles.includes('admin'))) {
+                                        patchState(store, {isAdmin : true});
                                         router.navigate(['/home/admin'], { replaceUrl: true });
                                     }
                                 },
@@ -57,8 +66,8 @@ export const UserAuthStore = signalStore(
                                     patchState(store, {isLoading: false});
                                 }
                             }),
-                            filter((userConnectd) => {
-                                return userConnectd.roles.includes('user');
+                            filter((userConnected) => {
+                                return userConnected.roles.includes('user');
                             }),
                             switchMap(() => {
                                 return authService.getCurrentUserInfos().pipe(
@@ -80,7 +89,9 @@ export const UserAuthStore = signalStore(
                     userAuth: store.userAuth(),
                     accessToken: store.accessToken(),
                     isLoading: store.isLoading(),
-                    isLoggedIn: store.isLoggedIn()
+                    isLoggedIn: store.isLoggedIn(),
+                    isAdmin: store.isAdmin(),
+                    roles: store.roles()
                 }
                 localStorage.setItem(localStorageKey, JSON.stringify(storeObjectToPersist));
             },

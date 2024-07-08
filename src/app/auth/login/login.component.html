@@ -13,7 +13,7 @@
                 <mat-spinner diameter="38"></mat-spinner>
             </span>
         } @else {
-            <button mat-raised-button type="submit">Se connecter</button>
+            <button mat-raised-button type="submit" [disabled]="loginForm.invalid">Se connecter</button>
         }
         <p class="info">
             Pas de compte ? cliquer <a routerLink="/signup">ici</a>

@@ -8,27 +8,38 @@ import { connectedWithAdminRoleGuard, connectedWithUserRoleGuard } from "../util
 
 export const routes: Routes = [
     {
-        path:'',
-        component: TicketsListComponent
-    },
-    {
-        path:'ticket/:ticketId',
-        component: TicketComponent,
-        canMatch: [connectedWithUserRoleGuard],
-    },
-    {
-        path:'ticket/:ticketId/task/:taskId',
-        component: TaskComponent,
-        canMatch: [connectedWithUserRoleGuard]
-    },
-    {
-        path: 'profile',
-        component: ProfilComponent,
-        canMatch: [connectedWithUserRoleGuard],
-    },
-    {
-        path: 'admin',
-        component: AdminComponent,
-        canMatch: [connectedWithAdminRoleGuard]
-    },
+        path: '',
+        children: [
+            {
+                path: '',
+                redirectTo: 'tickets',
+                pathMatch: "full",
+            },
+            {
+                path:'tickets',
+                component: TicketsListComponent,
+                canMatch: [connectedWithUserRoleGuard],
+            },
+            {
+                path:'ticket/:ticketId',
+                component: TicketComponent,
+                canMatch: [connectedWithUserRoleGuard],
+            },
+            {
+                path:'ticket/:ticketId/task/:taskId',
+                component: TaskComponent,
+                canMatch: [connectedWithUserRoleGuard]
+            },
+            {
+                path: 'profile',
+                component: ProfilComponent,
+                canMatch: [connectedWithUserRoleGuard],
+            },
+            {
+                path: 'admin',
+                component: AdminComponent,
+                canMatch: [connectedWithAdminRoleGuard]
+            },
+        ]
+    }
 ]

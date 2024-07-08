@@ -29,8 +29,18 @@ export class NavComponent {
   userName = input.required<string>();
   sidenav = viewChild(MatDrawer);
   private dialogService = inject(DialogService);
-  private UserAuthStore = inject(UserAuthStore);
-  isAdmin = computed(() => this.UserAuthStore.getUserConnectedRole().includes('admin'))
+  private userAuthStore = inject(UserAuthStore);
+  isVisible = computed(() => {
+    const isUserRole = this.userAuthStore.getUserConnectedRole().includes('user');
+    if(isUserRole ) return true;
+    return false;
+  })
+
+  isVisibleForAdmin = computed(() => {
+    const isUserAdmin = this.userAuthStore.getUserConnectedRole().includes('admin');
+    if(isUserAdmin ) return true;
+    return false;
+  })
 
   close() {
     this.sidenav()!.close().then(() => this.isSideNavBarOpened.set(false));

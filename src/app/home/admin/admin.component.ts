@@ -1,6 +1,6 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import {MatTableDataSource,MatTableModule} from '@angular/material/table';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { USERS_DATA } from '../../dummy';
 import { User } from './user.model';
 import {MatChipsModule} from '@angular/material/chips';
@@ -11,6 +11,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { DialogService } from '../../utils/dialog.service';
 import { ActionComponent, ActionType } from '../../layout/shared/modals/action/action.component';
 import { configUpdateRoleModal, UpdateUserRoleComponent } from '../../layout/shared/modals/update-user-role/update-user-role.component';
+import { UserService } from '../../utils/user.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const USERS_DATA_TO_DISPLAY : User[] = USERS_DATA;
 
@@ -26,17 +28,39 @@ const USERS_DATA_TO_DISPLAY : User[] = USERS_DATA;
     MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   changeDetection:ChangeDetectionStrategy.OnPush,
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent implements AfterViewInit{
+export class AdminComponent implements AfterViewInit, OnInit{
   private dialogService = inject(DialogService);
   displayedColumns: string[] = ['id', 'name', 'email', 'roles', 'isActive','actions'];
-  dataSource = new MatTableDataSource(USERS_DATA_TO_DISPLAY);
+  dataSource = new MatTableDataSource<User>([]);
   paginator = viewChild(MatPaginator);
+  userService = inject(UserService);
+  isLoading = signal<boolean>(false);
+  destroyRef = inject(DestroyRef);
+  resultsLength = 0;
+
+  ngOnInit(): void {
+    this.isLoading.set(true);
+    const subscription = this.userService.loadUsers().subscribe({
+      next: (users) => {
+        this.dataSource.data = users;
+        this.resultsLength = users.length;
+      },
+      error: () => {},
+      complete: () => {
+        this.isLoading.set(false)
+      }
+    });
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    })
+  }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator()!;

@@ -12,12 +12,22 @@
             </div>
             <mat-divider></mat-divider>
             <div class="item large-item">
-            @if (!isAdmin()) {
+            @if (isVisible()) {
                 <mat-list role="list">
                     <mat-list-item role="listitem">
                         <a routerLink="profile" mat-button extended>
                             <mat-icon fontIcon="person"></mat-icon>
                             Modifier mon compte
+                        </a>
+                    </mat-list-item>
+                </mat-list>
+            }
+            @if (isVisibleForAdmin()) {
+                <mat-list role="list">
+                    <mat-list-item role="listitem">
+                        <a routerLink="admin" mat-button extended>
+                            <mat-icon fontIcon="person"></mat-icon>
+                            Gestion des utilisateurs
                         </a>
                     </mat-list-item>
                 </mat-list>

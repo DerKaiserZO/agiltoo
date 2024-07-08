@@ -1,82 +1,89 @@
 <div class="content">
     <mat-card appearance="outlined">
-        <div class="container">
-
-            <table mat-table recycleRows [dataSource]="dataSource" class="mat-elevation-z8">
-                
-                <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef> No. </th>
-                    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-                </ng-container>
-                
-                <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef> Nom </th>
-                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-                </ng-container>
-                
-                <ng-container matColumnDef="email">
-                    <th mat-header-cell *matHeaderCellDef> Email </th>
-                    <td mat-cell *matCellDef="let element"> {{element.email}} </td>
-                </ng-container>
-                
-                <ng-container matColumnDef="isActive">
-                    <th mat-header-cell *matHeaderCellDef> Status </th>
-                    <td mat-cell *matCellDef="let element">
-                        <mat-chip-set aria-label="Fish selection">
-                            @if (element.isActive) {
-                                <mat-chip>Activé</mat-chip>
-                            } @else {
-                                <mat-chip>Désactivé</mat-chip>
-                            }
-                        </mat-chip-set> 
-                    </td>
-                </ng-container>
-                
-                <ng-container matColumnDef="roles">
-                    <th mat-header-cell *matHeaderCellDef> Roles </th>
-                    <td mat-cell *matCellDef="let element"> {{element.roles}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef> Actions </th>
-                    <td mat-cell *matCellDef="let element"> 
-                        <div class="actions-container">
-                            <button mat-icon-button
-                                matTooltip="Modifier l'utilisateur" 
-                                aria-label="Modifier un utisateur"
-                                (click)="onNameEdit(element)">
-                                <mat-icon>edit</mat-icon>
-                            </button>
-                            <button mat-icon-button
-                                matTooltip="Modifier le role de l'utilisateur" 
-                                aria-label="Modifier le role de l'utilisateur"
-                                (click)="onRoleEdit(element)"
-                                >
-                                <mat-icon>admin_panel_settings</mat-icon>
-                            </button>
-                            <button 
-                                mat-icon-button
-                                [matTooltip]="element.isActive === true ? 'Désactiver': 'Activer' " 
-                                aria-label="Activer / Désactiver l'utilisateur"
-                                (click)="onActionClicked(element)"
-                                >
-                                @if(element.isActive) {
-                                    <mat-icon class="toggle-on">toggle_on</mat-icon>
+        @if(isLoading()) {
+            <span class="spinner">
+              <mat-spinner></mat-spinner>
+            </span>
+        } @else {
+            <div class="container">
+    
+                <table mat-table recycleRows [dataSource]="dataSource" class="mat-elevation-z8">
+                    
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef> No. </th>
+                        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                    </ng-container>
+                    
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Nom </th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                    </ng-container>
+                    
+                    <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef> Email </th>
+                        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+                    </ng-container>
+                    
+                    <ng-container matColumnDef="isActive">
+                        <th mat-header-cell *matHeaderCellDef> Status </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-chip-set aria-label="Fish selection">
+                                @if (element.isActive) {
+                                    <mat-chip>Activé</mat-chip>
                                 } @else {
-                                    <mat-icon class="toggle-off">toggle_off</mat-icon>
+                                    <mat-chip>Désactivé</mat-chip>
                                 }
-                            </button>
-                        </div>
-                    </td>
-                </ng-container>
-                
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                 showFirstLastButtons
-                 aria-label="Select page of periodic elements">
-            </mat-paginator>
-        </div>
+                            </mat-chip-set> 
+                        </td>
+                    </ng-container>
+                    
+                    <ng-container matColumnDef="roles">
+                        <th mat-header-cell *matHeaderCellDef> Roles </th>
+                        <td mat-cell *matCellDef="let element"> {{element.roles}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> Actions </th>
+                        <td mat-cell *matCellDef="let element"> 
+                            <div class="actions-container">
+                                <button mat-icon-button
+                                    matTooltip="Modifier l'utilisateur" 
+                                    aria-label="Modifier un utisateur"
+                                    (click)="onNameEdit(element)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button
+                                    matTooltip="Modifier le role de l'utilisateur" 
+                                    aria-label="Modifier le role de l'utilisateur"
+                                    (click)="onRoleEdit(element)"
+                                    >
+                                    <mat-icon>admin_panel_settings</mat-icon>
+                                </button>
+                                <button 
+                                    mat-icon-button
+                                    [matTooltip]="element.isActive === true ? 'Désactiver': 'Activer' " 
+                                    aria-label="Activer / Désactiver l'utilisateur"
+                                    (click)="onActionClicked(element)"
+                                    >
+                                    @if(element.isActive) {
+                                        <mat-icon class="toggle-on">toggle_on</mat-icon>
+                                    } @else {
+                                        <mat-icon class="toggle-off">toggle_off</mat-icon>
+                                    }
+                                </button>
+                            </div>
+                        </td>
+                    </ng-container>
+                    
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator 
+                    [pageSizeOptions]="[5, 10, 20]"
+                    [length]="resultsLength"
+                    showFirstLastButtons>
+                </mat-paginator>
+            </div>
+        }
     </mat-card>
 </div>

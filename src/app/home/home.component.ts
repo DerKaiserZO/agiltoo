@@ -1,11 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, model, OnInit, signal, viewChild } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model, viewChild } from '@angular/core';
+import { ResolveFn, RouterLink, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '../layout/header/header.component';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
 import { NavComponent } from '../layout/nav/nav.component';
 import { UserAuthStore } from '../utils/stores/auth.store';
 
@@ -25,12 +21,28 @@ export class HomeComponent {
   userAuthStore = inject(UserAuthStore);
   isSideNavBarOpened = model(false);
   sidenav = viewChild(MatDrawer);
-  userConnectedName = computed(() => {
-    return this.userAuthStore.getUserConnectedRole().includes('admin') ? 'Admin' : this.userAuthStore.getUserConnectedName();
-  });
+  userConnectedName = input<string>();
+
+  // userConnectedName = computed(() => {
+  //   const isUserRole = this.userAuthStore.getUserConnectedRole().includes('user');
+  //   if((isUserRole && !this.userAuthStore.isAdmin()) || (isUserRole && this.userAuthStore.isAdmin())){
+  //     return this.userAuthStore.getUserConnectedName();
+  //   } else {
+  //     return 'Admin'
+  //   }
+  // });
   
   close() {
     this.sidenav()!.close().then(() => this.isSideNavBarOpened.set(false));
   }
     
 }
+export const resolveUserConnectedName: ResolveFn<string> = (
+  activatedRouteSnapshot,
+  routerState
+) => {
+  const userAuthStore = inject(UserAuthStore);
+  const isUserRole = userAuthStore.getUserConnectedRole().includes('user');
+  if(isUserRole) return userAuthStore.getUserConnectedName();
+  return 'Admin';
+};

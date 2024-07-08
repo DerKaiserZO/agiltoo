@@ -6,8 +6,8 @@ import { dataConfigStore } from '../stores/data-config.store';
 export const connectedUserGuard: CanMatchFn = (route, state) => {
   const router = inject(Router);
   const authUserStore = inject(UserAuthStore);
-  const dataConfStore = inject(dataConfigStore)
-  if(authUserStore.isLoggedIn()) {
+  const dataConfStore = inject(dataConfigStore);
+  if(authUserStore.checkIfIsUserConnected()) {
     return true;
   }
   authUserStore.logout();
