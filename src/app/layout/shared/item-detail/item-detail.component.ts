@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, input, model } from '@angular/core';
+import { Component, inject, input, model, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -32,6 +32,7 @@ export class ItemDetailComponent {
   itemType = input.required<ItemType>();
   private dialogService = inject(DialogService);
   router = inject(Router);
+  isTheOwner = signal<boolean>(true);
   
   deleteItem() {
     if(this.itemType() === ItemType.TICKET && this.item()!.tasks?.length){

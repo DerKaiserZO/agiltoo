@@ -1,18 +1,39 @@
 <app-card title="Inscription">
-    <form [formGroup]="signUpForm">
+    <form [formGroup]="signUpForm" (ngSubmit)="submit()">
         <mat-form-field appearance="fill">
             <mat-label>Nom complet</mat-label>
             <input matInput type="text" formControlName="name" required>
+            @if (signUpForm.controls.name.hasError('required')) {
+                <mat-error>Le nom est <strong>requis</strong></mat-error>
+            }
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" required>
+            @if (signUpForm.controls.email.hasError('email') && !signUpForm.controls.email.hasError('required')) {
+                <mat-error>S'il vous plaît, mettez une adresse email valide</mat-error>
+            }
+            @if (signUpForm.controls.email.hasError('required')) {
+                <mat-error>L'e-mail est <strong>requis</strong></mat-error>
+            }
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Mot de passe</mat-label>
             <input matInput type="password" formControlName="password" required>
+            @if (signUpForm.controls.password.hasError('minlength') && !signUpForm.controls.password.hasError('required')) {
+                <mat-error>S'il vous plaît, mettez un mot de place avec au minimum 6 caractéres</mat-error>
+            }
+            @if (signUpForm.controls.password.hasError('required')) {
+                <mat-error>Le mot de passe est <strong>requis</strong></mat-error>
+            }
         </mat-form-field><br>
-        <button mat-raised-button color="primary" [disabled]="signUpForm.invalid" type="submit">S'inscrire</button>
+        @if (isFetching()) {
+            <span class="spinner">
+                <mat-spinner diameter="38"></mat-spinner>
+            </span>
+        } @else {
+            <button mat-raised-button color="primary" [disabled]="signUpForm.invalid" type="submit">S'inscrire</button>
+        }
         <p class="info">
             Déjà un compte ? cliquer <a routerLink="/login">ici</a>
         </p>

@@ -2,7 +2,7 @@ import { patchState, signalStore, withComputed, withHooks, withMethods, withStat
 import { tapResponse } from '@ngrx/operators';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { UserInfos } from '../models/user-connected.model';
-import { LoginUser } from '../models/auth.model';
+import { LoginUser, SignupUser } from '../models/auth.model';
 import { debounceTime, filter, pipe, switchMap, tap } from 'rxjs';
 import { computed, inject } from '@angular/core';
 import { AuthService } from '../auth.service';
@@ -104,7 +104,46 @@ export const UserAuthStore = signalStore(
             upDateUserAuth(userAuthNewData : UserInfos): void {
                 patchState(store, {userAuth : userAuthNewData});
                 this.persistStore();
-            }
+            },
+            signup: rxMethod<SignupUser>(
+                pipe(
+                    debounceTime(300),
+                    tap(() => patchState(store,  {isLoading : true})),
+                    switchMap((signupUser) => {
+                        return authService.signup(signupUser).pipe(
+                            tapResponse({
+                                next: (userConnected) => {
+                                    patchState(store, {
+                                        isLoggedIn: true, 
+                                        accessToken: userConnected.accessToken, 
+                                        isLoading: false,
+                                        roles: userConnected.roles
+                                    });
+                                },
+                                error: (err) => {
+                                    patchState(store, {isLoading: false});
+                                },
+                                complete: () => patchState(store, {isLoading: false})
+                            }),
+                            filter((userConnected) => {
+                                return userConnected.roles.includes('user');
+                            }),
+                            debounceTime(800),
+                            switchMap(() => {
+                                return authService.getCurrentUserInfos().pipe(
+                                    tapResponse({
+                                        next: (userInfo) => {
+                                            patchState(store, { userAuth: userInfo });
+                                            router.navigate(['/home'], { replaceUrl: true });
+                                        },
+                                        error: () => { }
+                                    })
+                                );
+                            }),
+                        )
+                    }),
+                )
+            ),
         }
     }),
     withHooks({

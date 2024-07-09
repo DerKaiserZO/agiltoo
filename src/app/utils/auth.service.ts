@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { LoginUser } from './models/auth.model';
+import { LoginUser, SignupUser } from './models/auth.model';
 import { UserConnected } from './models/user-connected.model';
 import { BASE_API_EPICLINK, BASE_API_PRIORITY, BASE_API_PROJECT, BASE_API_STATUS, BASE_API_TAG, BASE_API_TYPE, BASE_API_USERS, BASE_AUTH } from './url-endpoints';
 import { catchError, concatMap, distinctUntilChanged, Observable, of, throwError, toArray } from 'rxjs';
@@ -18,16 +18,27 @@ export class AuthService {
   private dataConfigLink$ = of(BASE_API_PROJECT, BASE_API_TYPE, BASE_API_PRIORITY, BASE_API_STATUS, BASE_API_TAG, BASE_API_EPICLINK);
 
   login(user: LoginUser): Observable<UserConnected>{
-    return this.httpClient.post<UserConnected>(`${BASE_AUTH}/login` , {
-      "email": user.email,
-      "password": user.password
-    })
+    return this.httpClient.post<UserConnected>(`${BASE_AUTH}/login` , user)
     .pipe(
       catchError(
         (error) => throwError (
           () => {
             this.snackbarService.openSnackBar('Email ou mot de passe incorrecte');
             return new Error('Email ou mot de passe incorrecte');
+          }
+        )
+      )
+    )
+  }
+
+  signup(user: SignupUser): Observable<UserConnected>{
+    return this.httpClient.post<UserConnected>(`${BASE_AUTH}/register`, user)
+    .pipe(
+      catchError(
+        (error) => throwError (
+          () => {
+            this.snackbarService.openSnackBar('Un probléme est servenu, veuillez réessayer plus tard');
+            return new Error('Un probléme est servenu, veuillez réessayer plus tard');
           }
         )
       )

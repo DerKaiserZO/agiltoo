@@ -50,6 +50,7 @@ export class ItemsListComponent {
   isLoadingContent = input<boolean>();
   error = input<string>('');
   private url = '';
+  isTheOwner = signal<boolean>(true);
 
   constructor() {
     effect(() => {

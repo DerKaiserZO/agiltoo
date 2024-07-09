@@ -73,8 +73,10 @@
             }
         </div>
     </mat-card-content>
-    <mat-card-actions align="end">
-        <button mat-button (click)="updateItemDetails()">Modifier</button>
-        <button mat-button (click)="deleteItem()">Supprimer</button>
-    </mat-card-actions>
+    @if (isTheOwner()) {
+        <mat-card-actions align="end">
+            <button mat-button (click)="updateItemDetails()">Modifier</button>
+            <button mat-button (click)="deleteItem()">Supprimer</button>
+        </mat-card-actions>
+    }
 </mat-card>

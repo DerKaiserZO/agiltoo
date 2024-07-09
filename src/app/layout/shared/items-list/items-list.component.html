@@ -58,9 +58,13 @@
               }
             </div>
             <mat-action-row>
-              <button mat-button (click)="updateItemDetails(item)">Modifier</button>
+              @if (isTheOwner()) {
+                <button mat-button (click)="updateItemDetails(item)">Modifier</button>
+              }
               <button mat-button (click)="getDetails(item)">Voir détails</button>
-              <button mat-button (click)="deleteItem(item)">Supprimer</button>
+              @if (isTheOwner()) {
+                <button mat-button (click)="deleteItem(item)">Supprimer</button>
+              }
             </mat-action-row>
           </mat-expansion-panel>
         }

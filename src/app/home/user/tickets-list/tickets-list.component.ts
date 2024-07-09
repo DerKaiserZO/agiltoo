@@ -53,6 +53,7 @@ export class TicketsListComponent {
   private url = '';
   pageSize = 10;
   pageEvent: PageEvent = {pageIndex: 0, pageSize: this.pageSize, length: this.items()!.length};
+  isTheOwner = signal<boolean>(true);
 
   constructor() {
     effect(() => {
