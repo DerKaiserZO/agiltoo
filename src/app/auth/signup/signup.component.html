@@ -12,7 +12,7 @@
             <mat-label>Mot de passe</mat-label>
             <input matInput type="password" formControlName="password" required>
         </mat-form-field><br>
-        <button mat-raised-button color="primary" type="submit">S'inscrire</button>
+        <button mat-raised-button color="primary" [disabled]="signUpForm.invalid" type="submit">S'inscrire</button>
         <p class="info">
             Déjà un compte ? cliquer <a routerLink="/login">ici</a>
         </p>

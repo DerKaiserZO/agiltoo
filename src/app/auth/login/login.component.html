@@ -2,12 +2,24 @@
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
             <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" required>
+            <input matInput type="email" formControlName="email" required>
+            @if (loginForm.controls.email.hasError('email') && !loginForm.controls.email.hasError('required')) {
+                <mat-error>S'il vous plaît, mettez une adresse email valide</mat-error>
+            }
+            @if (loginForm.controls.email.hasError('required')) {
+                <mat-error>L'e-mail est <strong>requis</strong></mat-error>
+            }
         </mat-form-field>
-            <mat-form-field appearance="fill">
-        <mat-label>Mot de passe</mat-label>
+        <mat-form-field appearance="fill">
+            <mat-label>Mot de passe</mat-label>
             <input matInput type="password" formControlName="password" required>
-        </mat-form-field>
+            @if (loginForm.controls.password.hasError('minlength') && !loginForm.controls.password.hasError('required')) {
+                <mat-error>S'il vous plaît, mettez un mot de place avec au minimum 6 caractéres</mat-error>
+            }
+            @if (loginForm.controls.password.hasError('required')) {
+                <mat-error>Le mot de passe est <strong>requis</strong></mat-error>
+            }
+        </mat-form-field><br><br>
         @if (isFetching()) {
             <span class="spinner">
                 <mat-spinner diameter="38"></mat-spinner>
