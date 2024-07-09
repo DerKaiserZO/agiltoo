@@ -1,4 +1,4 @@
-import { Component, effect, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect, HostListener, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { localStorageKey, UserAuthStore } from './utils/stores/auth.store';
@@ -11,7 +11,7 @@ import { dataConfigStore, localStorageDataConfigKey } from './utils/stores/data-
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit{
+export class AppComponent {
   title = 'AGILTOO-APP';
   userAuthStore = inject(UserAuthStore);
   dataConfigStore = inject(dataConfigStore);
@@ -30,10 +30,5 @@ export class AppComponent implements OnInit{
         this.dataConfigStore.loadDataConfig();
       }
     })
-  }
-  ngOnInit(): void {
-    // if(this.userAuthStore && this.userAuthStore.isLoggedIn()) {
-    //   this.dataConfigStore.loadDataConfig();
-    // }
   }
 }

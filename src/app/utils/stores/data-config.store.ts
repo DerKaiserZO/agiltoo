@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { patchState, signalStore, withHooks, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { debounceTime, distinctUntilChanged, pipe, switchMap, tap } from "rxjs";
+import { catchError, debounceTime, distinctUntilChanged, pipe, retry, switchMap, tap, throwError } from "rxjs";
 import { AuthService } from "../auth.service";
 import { tapResponse } from "@ngrx/operators";
 
@@ -60,7 +60,8 @@ export const dataConfigStore = signalStore(
                                     })
                                 },
                                 error: (error) => patchState(store, {isLoading: false})
-                            })
+                            }),
+                            retry(3)
                         )
                     }),
                 )

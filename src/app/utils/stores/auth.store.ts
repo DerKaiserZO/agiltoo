@@ -35,6 +35,7 @@ export const UserAuthStore = signalStore(
     withComputed(({ accessToken, userAuth, isLoggedIn, isAdmin, roles }) => ({
         getAccesToken: computed(() => accessToken()),
         getUserConnectedName: computed(() => userAuth()!.name),
+        getUserConnected: computed(() => userAuth()),
         getUserConnectedRole: computed(() => roles()),
         checkIfIsUserConnected: computed(() => isLoggedIn()),
         checkIfIsUserIsAdmin: computed(() => isAdmin()),
@@ -99,7 +100,9 @@ export const UserAuthStore = signalStore(
                 patchState(store, initialState);
                 const persitedStore = localStorage.getItem(localStorageKey);
                 if(persitedStore) localStorage.removeItem(localStorageKey);
-                router.navigate(['/login'], { replaceUrl: true });
+                setTimeout(() => {
+                    router.navigate(['/login'], { replaceUrl: true });
+                }, 2000)
             },
             upDateUserAuth(userAuthNewData : UserInfos): void {
                 patchState(store, {userAuth : userAuthNewData});

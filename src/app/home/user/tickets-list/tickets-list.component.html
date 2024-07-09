@@ -69,11 +69,11 @@
                   }
                 </div>
                 <mat-action-row>
-                  @if(isTheOwner()) {
+                  @if(isTheOwner(item.owner)) {
                     <button mat-button (click)="updateItemDetails(item)">Modifier</button>
                   }
                   <button mat-button (click)="getDetails(item)">Voir détails</button>
-                  @if(isTheOwner()) {
+                  @if(isTheOwner(item.owner)) {
                     <button mat-button (click)="deleteItem(item)">Supprimer</button>
                   }
                 </mat-action-row>

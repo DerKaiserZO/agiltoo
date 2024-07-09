@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { Item, ItemType } from '../../../utils/models/item.model';
+import { Item, ItemType, Owner } from '../../../utils/models/item.model';
 import { DialogService } from '../../../utils/dialog.service';
 import { TaskModalComponent, configTaksModal } from '../modals/task-modal/task-modal.component';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -13,6 +13,7 @@ import { ComponentType } from '@angular/cdk/portal';
 import { TicketModalComponent } from '../modals/ticket-modal/ticket-modal.component';
 import { Router } from '@angular/router';
 import { NotificationComponent } from '../modals/notification/notification.component';
+import { UserAuthStore } from '../../../utils/stores/auth.store';
 
 @Component({
   selector: 'app-item-detail',
@@ -30,9 +31,9 @@ import { NotificationComponent } from '../modals/notification/notification.compo
 export class ItemDetailComponent {
   item = model<(Item)>();
   itemType = input.required<ItemType>();
+  authStore = inject(UserAuthStore);
   private dialogService = inject(DialogService);
   router = inject(Router);
-  isTheOwner = signal<boolean>(true);
   
   deleteItem() {
     if(this.itemType() === ItemType.TICKET && this.item()!.tasks?.length){
@@ -73,6 +74,13 @@ export class ItemDetailComponent {
     });
     
   };
+
+  
+  isTheOwner(owner: Owner): boolean {
+    const currentConnectedUser = this.authStore.getUserConnected();
+    return (currentConnectedUser?.id === owner.id && currentConnectedUser.name === owner.name) ? true : false ;
+  }
+
 
   private initForm(): FormGroup {
     if(this.itemType() == ItemType.TICKET) {

@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { LoginUser, SignupUser } from './models/auth.model';
 import { UserConnected } from './models/user-connected.model';
 import { BASE_API_EPICLINK, BASE_API_PRIORITY, BASE_API_PROJECT, BASE_API_STATUS, BASE_API_TAG, BASE_API_TYPE, BASE_API_USERS, BASE_AUTH } from './url-endpoints';
-import { catchError, concatMap, distinctUntilChanged, Observable, of, throwError, toArray } from 'rxjs';
+import { catchError, concatMap, distinctUntilChanged, Observable, of, retry, throwError, toArray } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 import { User } from '../home/admin/user.model';
 import { DataConfigType } from './stores/data-config.store';
@@ -55,7 +55,8 @@ export class AuthService {
             return new Error('Impossible de récupérer les données');
           }
         )
-      )
+      ),
+      retry(3)
     )
   };
 
@@ -70,6 +71,7 @@ export class AuthService {
           }
         )
       ),
+      retry(3),
       toArray()
     )
   };
@@ -85,7 +87,8 @@ export class AuthService {
             return new Error('Impossible de récupérer les données');
           }
         )
-      )
+      ),
+      retry(3)
     )
   }
 }

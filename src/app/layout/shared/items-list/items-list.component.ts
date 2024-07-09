@@ -2,7 +2,7 @@ import { Component, effect, inject, input, model, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ItemType, Task } from '../../../utils/models/item.model';
+import { ItemType, Owner, Task, Ticket } from '../../../utils/models/item.model';
 import {MatChipsModule} from '@angular/material/chips';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -14,6 +14,7 @@ import { ActionComponent, ActionType } from '../modals/action/action.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TicketModalComponent } from '../modals/ticket-modal/ticket-modal.component';
 import { ComponentType } from '@angular/cdk/portal';
+import { UserAuthStore } from '../../../utils/stores/auth.store';
 
 export enum formAction {
   CREATE = "Create",
@@ -41,6 +42,7 @@ const BASE_URL = "/home/ticket"
 export class ItemsListComponent {
   private dialogService = inject(DialogService);
   private router = inject(Router);
+  private authStore = inject(UserAuthStore);
   private activatedRoute = inject(ActivatedRoute);
   items = model<Task[]>();
   paginatedData = signal<Task[]>([]);
@@ -50,7 +52,7 @@ export class ItemsListComponent {
   isLoadingContent = input<boolean>();
   error = input<string>('');
   private url = '';
-  isTheOwner = signal<boolean>(true);
+  ticketParent = input<Ticket>();
 
   constructor() {
     effect(() => {
@@ -131,6 +133,17 @@ export class ItemsListComponent {
         this.items.update((oldValues) => [result, ...oldValues!])
       }
     });
+  }
+
+  
+  isTheOwner(owner: Owner): boolean {
+    const currentConnectedUser = this.authStore.getUserConnected();
+    return (currentConnectedUser?.id === owner.id && currentConnectedUser.name === owner.name) ? true : false ;
+  }
+
+  isTheTicketOwner(): boolean {
+    const currentConnectedUser = this.authStore.getUserConnected();
+    return (currentConnectedUser?.id === this.ticketParent()?.owner.id && currentConnectedUser?.name === this.ticketParent()?.owner.name) ? true : false ;
   }
 
   private setNewPagination(pageEvent: PageEvent){

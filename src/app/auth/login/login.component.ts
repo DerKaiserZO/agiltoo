@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CardComponent } from '../../layout/shared/card/card.component';
 import { MatInputModule } from '@angular/material/input';
@@ -26,9 +26,8 @@ import { UserAuthStore } from '../../utils/stores/auth.store';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   readonly userAuthStore = inject(UserAuthStore);
-
   authService = inject(AuthService);
   isFetching = this.userAuthStore.isLoading;
   private router = inject(Router);
@@ -41,6 +40,15 @@ export class LoginComponent {
       validators: [Validators.required, Validators.minLength(6)]
     })
   });
+
+  
+  ngOnInit(): void {
+    if (this.userAuthStore.checkIfIsUserConnected!) {
+      this.router.navigateByUrl('/home', {
+        replaceUrl : true
+      })
+    }
+  }
 
   // get emailIsInvalid() {
   //   return (this.loginForm.controls.email.touched && this.loginForm.controls.email.dirty && this.loginForm.controls.email.invalid);

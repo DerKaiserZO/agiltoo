@@ -9,11 +9,12 @@ import { DialogService } from '../../../utils/dialog.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ItemType, Ticket } from '../../../utils/models/item.model';
+import { ItemType, Owner, Ticket } from '../../../utils/models/item.model';
 import { ActionComponent, ActionType } from '../../../layout/shared/modals/action/action.component';
 import { configTaksModal, TicketModalComponent } from '../../../layout/shared/modals/ticket-modal/ticket-modal.component';
 import { UserService } from '../../../utils/user.service';
 import { NotificationComponent } from '../../../layout/shared/modals/notification/notification.component';
+import { UserAuthStore } from '../../../utils/stores/auth.store';
 
 export enum formAction {
   CREATE = "Create",
@@ -45,6 +46,7 @@ export class TicketsListComponent {
   private activatedRoute = inject(ActivatedRoute);
   private userService = inject(UserService);
   private destroyRef = inject(DestroyRef);
+  private authStore = inject(UserAuthStore);
   items = this.userService.tickets;
   paginatedData = signal<Ticket[]>([]);
   title = ITEM_TYPE;
@@ -53,7 +55,6 @@ export class TicketsListComponent {
   private url = '';
   pageSize = 10;
   pageEvent: PageEvent = {pageIndex: 0, pageSize: this.pageSize, length: this.items()!.length};
-  isTheOwner = signal<boolean>(true);
 
   constructor() {
     effect(() => {
@@ -65,21 +66,21 @@ export class TicketsListComponent {
     })
   }
 
-    ngOnInit(): void {
-      this.isLoadingContent.set(true)
-      const subscription = this.userService.getTickets()
-      .subscribe(
-          {
-            error: (result) => {
-              return this.items.set(result);
-            },
-            complete: () => this.isLoadingContent.set(false)
-          }
-      )
-      this.destroyRef.onDestroy(() => {
-        subscription.unsubscribe();
-      });
-    }
+  ngOnInit(): void {
+    this.isLoadingContent.set(true)
+    const subscription = this.userService.getTickets()
+    .subscribe(
+        {
+          error: (result) => {
+            return this.items.set(result);
+          },
+          complete: () => this.isLoadingContent.set(false)
+        }
+    )
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
+  }
 
 
   deleteItem(itemToDelete: Ticket) {
@@ -121,6 +122,11 @@ export class TicketsListComponent {
     this.dialogService.openDialog(TicketModalComponent, configTaksModal, {
       action: formAction.CREATE,
     });
+  }
+
+  isTheOwner(owner: Owner): boolean {
+    const currentConnectedUser = this.authStore.getUserConnected();
+    return (currentConnectedUser?.id === owner.id && currentConnectedUser.name === owner.name) ? true : false ;
   }
 
   private setNewPagination(pageEvent: PageEvent){

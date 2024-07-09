@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { Task, Ticket } from "./models/item.model";
 import { BASE_API_TASK, BASE_API_TICKET, BASE_API_USERS } from "./url-endpoints";
-import { catchError, concatMap, debounceTime, map, of, switchMap, tap, throwError } from "rxjs";
+import { catchError, concatMap, debounceTime, map, of, retry, switchMap, tap, throwError } from "rxjs";
 import { SnackbarService } from "./snackbar.service";
 import { ItemRequestModel, TaskRequestModel } from "../layout/shared/modals/task-modal/item-request.model";
 import { User } from "../home/admin/user.model";
@@ -27,7 +27,7 @@ export class UserService {
               return new Error('Impossible de modifier le nom');
             }
           )
-        ),
+        )
       )
     }
 
@@ -65,11 +65,13 @@ export class UserService {
       return this.httpClient.get<User[]>(`${BASE_API_USERS}/complet`)
       .pipe(catchError(
         (error) => throwError (
-          () => {
-            return new Error('Impossible de récupérer les données');
-          }
-        )
-      ),)
+            () => {
+              return new Error('Impossible de récupérer les données');
+            }
+          )
+        ),
+        retry(3)
+      )
     }
 
     getTickets() {
@@ -84,6 +86,7 @@ export class UserService {
               }
             )
           ),
+          retry(3),
           tap({
             next: (ticketsResults) => this.tickets.set(ticketsResults)
           })

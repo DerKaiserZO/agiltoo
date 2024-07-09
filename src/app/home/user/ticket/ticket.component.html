@@ -14,7 +14,7 @@
         </div>
         <div class="column">
             <mat-card appearance="outlined">
-                <app-items-list [(items)]="tasks" title="Tâches" [itemType]="itemTypeTask" [pageEvent]="pageEvent!"/>
+                <app-items-list [ticketParent]="ticket" [(items)]="tasks" title="Tâches" [itemType]="itemTypeTask" [pageEvent]="pageEvent!"/>
             </mat-card>
         </div>
     }
