@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { USERS_DATA } from '../../dummy';
@@ -9,12 +9,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { DialogService } from '../../utils/dialog.service';
-import { ActionComponent, ActionType } from '../../layout/shared/modals/action/action.component';
+import { ActionType } from '../../layout/shared/modals/action/action.component';
 import { configUpdateRoleModal, UpdateUserRoleComponent } from '../../layout/shared/modals/update-user-role/update-user-role.component';
 import { UserService } from '../../utils/user.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AdminActionsComponent } from '../../layout/shared/modals/admin-actions/admin-actions.component';
+import { SnackbarService } from '../../utils/snackbar.service';
 
-const USERS_DATA_TO_DISPLAY : User[] = USERS_DATA;
 
 
 @Component({
@@ -35,26 +36,32 @@ const USERS_DATA_TO_DISPLAY : User[] = USERS_DATA;
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent implements AfterViewInit, OnInit{
+export class AdminComponent implements OnInit{
   private dialogService = inject(DialogService);
   displayedColumns: string[] = ['id', 'name', 'email', 'roles', 'isActive','actions'];
-  dataSource = new MatTableDataSource<User>([]);
+  dataSource?: MatTableDataSource<User>;
   paginator = viewChild(MatPaginator);
   userService = inject(UserService);
   isLoading = signal<boolean>(false);
+  isLoadingRoleUpdate = signal<boolean>(false);
   destroyRef = inject(DestroyRef);
-  resultsLength = 0;
+  private snackbar = inject(SnackbarService);
+  
+  constructor() {
+    effect(() => {
+      this.dataSource!.paginator = this.paginator()!;
+    })
+  }
 
   ngOnInit(): void {
     this.isLoading.set(true);
     const subscription = this.userService.loadUsers().subscribe({
       next: (users) => {
-        this.dataSource.data = users;
-        this.resultsLength = users.length;
+        this.dataSource = new MatTableDataSource(users);
       },
       error: () => {},
       complete: () => {
-        this.isLoading.set(false)
+        this.isLoading.set(false);
       }
     });
     this.destroyRef.onDestroy(() => {
@@ -62,33 +69,68 @@ export class AdminComponent implements AfterViewInit, OnInit{
     })
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator()!;
-  }
-
   onActionClicked(selectedUser: User) {
-    this.dataSource.data = this.dataSource.data.map((user) => {
-      if(user.id === selectedUser.id) {
-        return { ...user, isActive: !selectedUser.isActive}
+    this.isLoadingRoleUpdate.set(true);
+    const subscription = this.userService.updateUser({...selectedUser, isActive : !selectedUser.isActive}).subscribe({
+      next: () => {
+        this.isLoadingRoleUpdate.set(false);
+        this.dataSource!.data = this.dataSource!.data.map((user) => {
+          if(user.id === selectedUser.id) {
+            return { ...user, isActive: !selectedUser.isActive}
+          }
+          return user;
+        });
+        this.snackbar.openSnackBar('Modification effectuée avec succés');
+      },
+      error: (error) => {
+        this.snackbar.openSnackBar(error);
+        this.isLoadingRoleUpdate.set(false);
       }
-      return user;
+    })
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
     })
   }
 
   onNameEdit(user: User) {
-    this.dialogService.openDialog(ActionComponent, undefined, {
+    let dialogRef = this.dialogService.openDialog(AdminActionsComponent, undefined, {
       message : 'Veuillez renseigner le nouveau nom',
-      action: ActionType.UPDATE_NAME,
-      modalTitle : 'Modification du nom'
+      modalTitle : 'Modification du nom',
+      user
+    });
+    let subscription = dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.dataSource!.data = this.dataSource!.data.map((user) => {
+          if(user.id === result.id) {
+            return { ...user, name: result.name}
+          }
+          return user;
+        })
+      }
+    });
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
     })
   }
 
   onRoleEdit(user: User) {
-    this.dialogService.openDialog(UpdateUserRoleComponent, configUpdateRoleModal, {
+    let dialogRef = this.dialogService.openDialog(UpdateUserRoleComponent, configUpdateRoleModal, {
       message : 'Veuillez choisir le role ',
-      action: ActionType.UPDATE_NAME,
       modalTitle : 'Modification du role',
-      roles: user.roles
+      userToUpdate: user
+    });
+    let subscription = dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.dataSource!.data = this.dataSource!.data.map((user) => {
+          if(user.id === result.id) {
+            return { ...user, roles: result.roles}
+          }
+          return user;
+        })
+      }
+    });
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
     })
   }
 }

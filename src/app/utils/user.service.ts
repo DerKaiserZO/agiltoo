@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { Task, Ticket } from "./models/item.model";
 import { BASE_API_TASK, BASE_API_TICKET, BASE_API_USERS } from "./url-endpoints";
-import { catchError, map, tap, throwError } from "rxjs";
+import { catchError, concatMap, debounceTime, map, of, switchMap, tap, throwError } from "rxjs";
 import { SnackbarService } from "./snackbar.service";
 import { ItemRequestModel, TaskRequestModel } from "../layout/shared/modals/task-modal/item-request.model";
 import { User } from "../home/admin/user.model";
@@ -41,6 +41,23 @@ export class UserService {
             }
           )
         ),
+      )
+    }
+
+    updateUser(userToUpdate: User) {
+      return of(userToUpdate).pipe(
+        debounceTime(5000),
+        concatMap((user) => this.httpClient.put<User>(`${BASE_API_USERS}`, user)
+          .pipe(
+            catchError(
+              (error) => throwError (
+                () => {
+                  return new Error('Impossible de modifier le nom');
+                }
+              )
+            ),
+          )
+        )
       )
     }
 

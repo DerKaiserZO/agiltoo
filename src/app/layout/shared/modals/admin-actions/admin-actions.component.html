@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>{{data.modalTitle}}</h2>
+<form #form="ngForm">
+  <mat-dialog-content>
+      Nom actuel :<p>{{ data.user.name }}</p>
+      <p>{{ data.message }} </p>
+      <mat-form-field>
+          <mat-label>Nouveau Nom</mat-label>
+          <input matInput [(ngModel)]="name" name="name" required/>
+      </mat-form-field>
+  </mat-dialog-content>
+  @if (isLoading()) {
+    <span class="spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </span>
+  } @else {
+    <mat-dialog-actions>
+      <button mat-button (click)="submit()" [disabled]="form.invalid">Oui</button>
+      <button mat-button mat-dialog-close>Non</button>
+    </mat-dialog-actions>
+  }
+</form>

@@ -7,7 +7,7 @@
         } @else {
             <div class="container">
     
-                <table mat-table recycleRows [dataSource]="dataSource" class="mat-elevation-z8">
+                <table mat-table recycleRows [dataSource]="dataSource!" class="mat-elevation-z8">
                     
                     <ng-container matColumnDef="id">
                         <th mat-header-cell *matHeaderCellDef> No. </th>
@@ -61,6 +61,7 @@
                                 </button>
                                 <button 
                                     mat-icon-button
+                                    [disabled]="isLoadingRoleUpdate()"
                                     [matTooltip]="element.isActive === true ? 'Désactiver': 'Activer' " 
                                     aria-label="Activer / Désactiver l'utilisateur"
                                     (click)="onActionClicked(element)"
@@ -80,7 +81,6 @@
                 </table>
                 <mat-paginator 
                     [pageSizeOptions]="[5, 10, 20]"
-                    [length]="resultsLength"
                     showFirstLastButtons>
                 </mat-paginator>
             </div>
