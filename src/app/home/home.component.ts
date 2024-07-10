@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, model, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model, signal, viewChild } from '@angular/core';
 import { ResolveFn, RouterLink, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '../layout/header/header.component';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -21,7 +21,13 @@ export class HomeComponent {
   userAuthStore = inject(UserAuthStore);
   isSideNavBarOpened = model(false);
   sidenav = viewChild(MatDrawer);
-  userConnectedName = computed(() => this.userAuthStore.getUserConnectedName());
+  userConnectedName = computed(() => {
+    if(this.userAuthStore.isLoggedIn() &&!this.userAuthStore.isAdmin() && this.userAuthStore.getUserConnectedName()) {
+      return this.userAuthStore.getUserConnectedName()
+    } else {
+      return 'Admin'
+    }
+  });
 
   
   close() {

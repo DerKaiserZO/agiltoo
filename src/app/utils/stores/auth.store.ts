@@ -100,9 +100,7 @@ export const UserAuthStore = signalStore(
                 patchState(store, initialState);
                 const persitedStore = localStorage.getItem(localStorageKey);
                 if(persitedStore) localStorage.removeItem(localStorageKey);
-                setTimeout(() => {
-                    router.navigate(['/login'], { replaceUrl: true });
-                }, 2000)
+                router.navigate(['/login'], { replaceUrl: true });
             },
             upDateUserAuth(userAuthNewData : UserInfos): void {
                 patchState(store, {userAuth : userAuthNewData});
@@ -115,35 +113,42 @@ export const UserAuthStore = signalStore(
                     switchMap((signupUser) => {
                         return authService.signup(signupUser).pipe(
                             tapResponse({
+                            next: (userConnected) => {
+                                patchState(store, {
+                                isLoggedIn: true,
+                                isLoading: false,
+                                roles: userConnected.roles
+                                });
+                            },
+                            error: (err) => {
+                                patchState(store, {isLoading: false});
+                            },
+                            complete: () => patchState(store, {isLoading: false})
+                            }),
+                            switchMap(() => {
+                            return authService.login(signupUser).pipe(
+                                tapResponse({
                                 next: (userConnected) => {
-                                    patchState(store, {
-                                        isLoggedIn: true, 
-                                        accessToken: userConnected.accessToken, 
-                                        isLoading: false,
-                                        roles: userConnected.roles
-                                    });
-                                    if (userConnected.accessToken) {
-                                        authService.getCurrentUserInfos().pipe(
-                                            tapResponse({
-                                                next: (userInfo) => {
-                                                    patchState(store, { userAuth: userInfo });
-                                                    router.navigate(['/home'], { replaceUrl: true });
-                                                },
-                                                error: (error) => { 
-                                                    const err = new Error('Impossible de récupérer vos informations'); throwError(() => err);
-                                                }
-                                            })
-                                        );
-                                    } else {
-                                        const err = new Error('Impossible de récupérer vos informations'); throwError(() => err);
-                                    }
+                                    patchState(store, { accessToken: userConnected.accessToken });
                                 },
                                 error: (err) => {
-                                    patchState(store, {isLoading: false});
-                                },
-                                complete: () => patchState(store, {isLoading: false})
-                            }),
-                        )
+                                    patchState(store, { isLoading: false });
+                                }
+                                }),
+                                switchMap(() => {
+                                return authService.getCurrentUserInfos().pipe(
+                                    tapResponse({
+                                    next: (userInfo) => {
+                                        patchState(store, { userAuth: userInfo });
+                                        router.navigate(['/home'], { replaceUrl: true });
+                                    },
+                                    error: () => {}
+                                    })
+                                );
+                                })
+                            );
+                            })
+                        );
                     }),
                 )
             ),

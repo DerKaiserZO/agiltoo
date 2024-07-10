@@ -22,9 +22,6 @@ export const routes: Routes = [
         path: 'home',
         component: HomeComponent,
         canMatch: [connectedUserGuard],
-        resolve: {
-            userConnectedName: resolveUserConnectedName
-        },
         loadChildren: () => import('./home/home.routes').then(component => component.routes)
     },
     { path: 'not-authorized', loadComponent: () => import('./not-authorized/not-authorized.component').then(component => component.NotAuthorizedComponent)},
