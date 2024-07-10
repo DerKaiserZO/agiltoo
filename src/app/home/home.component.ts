@@ -21,7 +21,7 @@ export class HomeComponent {
   userAuthStore = inject(UserAuthStore);
   isSideNavBarOpened = model(false);
   sidenav = viewChild(MatDrawer);
-  userConnectedName = input<string>();
+  userConnectedName = computed(() => this.userAuthStore.getUserConnectedName());
 
   
   close() {

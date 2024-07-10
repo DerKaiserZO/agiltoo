@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogConfig, Mat
 import { MatFormField } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
-import { Owner, Priority, Status, Type } from '../../../../utils/models/item.model';
+import { Owner } from '../../../../utils/models/item.model';
 import { formAction } from '../../items-list/items-list.component';
 import { SnackbarService } from '../../../../utils/snackbar.service';
 import { dataConfigStore } from '../../../../utils/stores/data-config.store';
@@ -63,9 +63,8 @@ export class TaskModalComponent implements OnInit{
   isLoading = signal<boolean>(false);
 
   itemForm = this.initForm();
-  types: Type[] = [];
-  priorities: Priority[] = [];
-  statuses: Status[] = [];
+  priorities =  this.dataConfigStore.priorities();
+  statuses = this.dataConfigStore.status();
   users: Owner[] = [];
 
   get Title() {
@@ -75,9 +74,6 @@ export class TaskModalComponent implements OnInit{
 
 
   ngOnInit(): void {
-    this.types = this.dataConfigStore.types();
-    this.priorities = this.dataConfigStore.priorities();
-    this.statuses = this.dataConfigStore.status();
     const subscription = this.authService.getResponsibles().subscribe((results) => this.users = results);
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }

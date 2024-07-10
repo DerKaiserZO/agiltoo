@@ -82,6 +82,7 @@ export class ActionComponent {
       .subscribe({
         next: (user) => {
           this.snackbar.openSnackBar('Modification effectuée avec succés');
+          this.userAuthStore.upDateCurrentUserName(this.name());
           this.dialogRef.close();
         },
         error: (error: Error) => {

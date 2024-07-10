@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, model, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import { ItemType, Task, Ticket } from '../../../utils/models/item.model';
@@ -12,6 +12,8 @@ import { ItemDetailComponent } from '../../../layout/shared/item-detail/item-det
 import { UserService } from '../../../utils/user.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SnackbarService } from '../../../utils/snackbar.service';
+import { dataConfigStore, localStorageDataConfigKey } from '../../../utils/stores/data-config.store';
+import { UserAuthStore } from '../../../utils/stores/auth.store';
 
 const pageSize = 10;
 
@@ -34,6 +36,8 @@ const pageSize = 10;
   styleUrl: './ticket.component.scss'
 })
 export class TicketComponent implements OnInit{
+  userAuthStore = inject(UserAuthStore);
+  dataConfigStore = inject(dataConfigStore);
   itemTypeTicket = ItemType.TICKET;
   itemTypeTask = ItemType.TASK;
   pageEvent:PageEvent | undefined;
@@ -43,18 +47,18 @@ export class TicketComponent implements OnInit{
   private snackbar = inject(SnackbarService);
   router = inject(Router);
   private ticketId = this.activatedRoute.snapshot.paramMap.get('ticketId');
-  ticket?:Ticket;
-  tasks: Task[] = [];
+  ticket = model<Ticket>();
   isLoading = signal<boolean>(false);
 
   ngOnInit(): void {
+    this.checkIfConfigDataIsLoaded();
     this.isLoading.set(true);
     const subscription = this.userService.getOneTicket(+this.ticketId!)
     .subscribe({
       next: (result) => {
-        this.ticket = result;
-        this.tasks = result.tasks!;
-        this.pageEvent = {pageIndex: 0, pageSize: pageSize, length: this.tasks!.length};
+        this.ticket.set(result);
+        const tasksLength = result.tasks!.length;
+        this.pageEvent = {pageIndex: 0, pageSize: pageSize, length: tasksLength};
       },
       error: (error) => {
         this.snackbar.openSnackBar(error.message, true);
@@ -67,6 +71,13 @@ export class TicketComponent implements OnInit{
     this.destroyRef.onDestroy(() => subscription.unsubscribe())
   }
 
+
+  private checkIfConfigDataIsLoaded() {
+    const persitedDataConfigStore = localStorage.getItem(localStorageDataConfigKey);
+    if (this.userAuthStore && this.userAuthStore.isLoggedIn() && persitedDataConfigStore === null) {
+      this.dataConfigStore.loadDataConfig();
+    }
+  }
 }
 
 

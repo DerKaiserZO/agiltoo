@@ -15,6 +15,7 @@ import { configTaksModal, TicketModalComponent } from '../../../layout/shared/mo
 import { UserService } from '../../../utils/user.service';
 import { NotificationComponent } from '../../../layout/shared/modals/notification/notification.component';
 import { UserAuthStore } from '../../../utils/stores/auth.store';
+import { dataConfigStore, localStorageDataConfigKey } from '../../../utils/stores/data-config.store';
 
 export enum formAction {
   CREATE = "Create",
@@ -41,6 +42,8 @@ const ITEM_TYPE = "Tickets"
   styleUrl: './tickets-list.component.scss'
 })
 export class TicketsListComponent {
+  userAuthStore = inject(UserAuthStore);
+  dataConfigStore = inject(dataConfigStore);
   private dialogService = inject(DialogService);
   private router = inject(Router);
   private userService = inject(UserService);
@@ -50,6 +53,7 @@ export class TicketsListComponent {
   paginatedData = signal<Ticket[]>([]);
   title = ITEM_TYPE;
   isLoadingContent = signal<boolean>(false);
+  isLoadingConfig = this.dataConfigStore.isLoading;
   error = signal<string>('');
   private url = '';
   pageSize = 10;
@@ -57,21 +61,26 @@ export class TicketsListComponent {
 
   constructor() {
     effect(() => {
-      if(this.pageEvent){
-        this.setNewPagination(this.pageEvent);
-      }
-      },{
-        allowSignalWrites: true
-      }
+        if(this.pageEvent){
+          this.setNewPagination(this.pageEvent);
+        }
+      },{ allowSignalWrites: true }
+      
     )
   }
 
   ngOnInit(): void {
-    this.isLoadingContent.set(true)
+    this.isLoadingContent.set(true);
     const subscription = this.userService.getTickets()
     .subscribe(
         {
-          next: (result) => this.items.set(result),
+          next: (result) => {
+            this.items.set(result);
+            const persitedDataConfigStore = localStorage.getItem(localStorageDataConfigKey);
+            if(this.userAuthStore && this.userAuthStore.isLoggedIn() && persitedDataConfigStore === null) {
+              this.dataConfigStore.loadDataConfig();
+            }
+          },
           complete: () => this.isLoadingContent.set(false)
         }
     )

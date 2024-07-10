@@ -3,35 +3,37 @@
         <div class="info-container">
             <h3>Informations du compte</h3>
             <mat-list role="list">
-                <mat-list-item role="info">
-                    <div matListItemTitle>
-                        <span class="info-list-role">Nom:</span>
-                    </div>
-                    <div matListItemLine>
-                        {{ currentLoggedUser()!.name }}
-                    </div>
-                    <div matListItemMeta>
-                        <button mat-icon-button (click)="onNameEdit()">
-                            <mat-icon fontIcon="edit"></mat-icon>
-                        </button>
-                    </div>
-                </mat-list-item>
-                <mat-list-item role="info">
-                    <div matListItemTitle>
-                        <span class="info-list-role">Email:</span>
-                    </div>
-                    <div matListItemLine>
-                        {{ currentLoggedUser()!.email }}
-                    </div>
-                </mat-list-item>
-                <mat-list-item role="info">
-                    <div matListItemTitle>
-                        <span class="info-list-role">Rôles:</span>
-                    </div>
-                    <div matListItemLine>
-                        {{ currentLoggedUser()!.roles }}
-                    </div>
-                </mat-list-item>
+                @if(currentLoggedUser()) {
+                    <mat-list-item role="info">
+                        <div matListItemTitle>
+                            <span class="info-list-role">Nom:</span>
+                        </div>
+                        <div matListItemLine>
+                            {{ currentLoggedUser()!.name }}
+                        </div>
+                        <div matListItemMeta>
+                            <button mat-icon-button (click)="onNameEdit()">
+                                <mat-icon fontIcon="edit"></mat-icon>
+                            </button>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item role="info">
+                        <div matListItemTitle>
+                            <span class="info-list-role">Email:</span>
+                        </div>
+                        <div matListItemLine>
+                            {{ currentLoggedUser()!.email }}
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item role="info">
+                        <div matListItemTitle>
+                            <span class="info-list-role">Rôles:</span>
+                        </div>
+                        <div matListItemLine>
+                            {{ currentLoggedUser()!.roles }}
+                        </div>
+                    </mat-list-item>
+                }
             </mat-list>
             <button mat-flat-button (click)="onPasswordChange()">Changer le mot de passe</button>              
         </div>

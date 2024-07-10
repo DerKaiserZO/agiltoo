@@ -95,7 +95,7 @@
           </div>
         }
         <div  class="button-bottom">
-          <button mat-raised-button (click)="add()">Créer</button>
+          <button mat-raised-button (click)="add()" [disabled]="isLoadingConfig()">Créer</button>
         </div>
       }
     </div>

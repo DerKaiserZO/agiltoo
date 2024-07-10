@@ -16,8 +16,8 @@
       </span>
     </div>
   }
-  @if (items()) {
-    @if(!isLoadingContent() && items()!.length) {
+  @if (tasks()) {
+    @if(!isLoadingContent() && tasks()!.length) {
       <mat-accordion>
         @for (item of paginatedData(); track item.id) {
           <mat-expansion-panel>
@@ -70,13 +70,13 @@
         }
       </mat-accordion>
       <mat-paginator 
-        [length]="items()!.length"
+        [length]="tasks()!.length"
         [pageSize]="pageEvent().pageSize"
         [pageSizeOptions]="[5, 10, 25, 100]"
         (page)="handlePageEvent($event)"
         aria-label="Select page">
       </mat-paginator>       
-    } @else if (!isLoadingContent() && items()!.length === 0) {
+    } @else if (!isLoadingContent() && tasks()!.length === 0) {
       <div id="empty-task-message">
         <span>
           Aucune tâche !

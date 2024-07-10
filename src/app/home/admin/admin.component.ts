@@ -13,6 +13,7 @@ import { UserService } from '../../utils/user.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AdminActionsComponent } from '../../layout/shared/modals/admin-actions/admin-actions.component';
 import { SnackbarService } from '../../utils/snackbar.service';
+import { UserAuthStore } from '../../utils/stores/auth.store';
 
 
 
@@ -44,6 +45,7 @@ export class AdminComponent implements OnInit{
   isLoadingRoleUpdate = signal<boolean>(false);
   destroyRef = inject(DestroyRef);
   private snackbar = inject(SnackbarService);
+  private authStore = inject(UserAuthStore);
   
   constructor() {
     effect(() => {
@@ -132,5 +134,9 @@ export class AdminComponent implements OnInit{
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     })
+  }
+
+  isTheCurrentUser(user: User) {
+    return (this.authStore.getUserConnected()?.id == user.id) && (this.authStore.getUserConnected()?.name == user.name)
   }
 }

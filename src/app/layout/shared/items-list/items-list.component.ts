@@ -42,8 +42,7 @@ export class ItemsListComponent {
   private router = inject(Router);
   private authStore = inject(UserAuthStore);
   private activatedRoute = inject(ActivatedRoute);
-  destroyRef = inject(DestroyRef);
-  items = model<Task[]>();
+  private destroyRef = inject(DestroyRef);
   paginatedData = signal<Task[]>([]);
   pageEvent = input.required<PageEvent>();
   title = input<string>();
@@ -51,10 +50,14 @@ export class ItemsListComponent {
   isLoadingContent = input<boolean>();
   error = input<string>('');
   private url = '';
-  ticketParent = input<Ticket>();
+  ticketParent = model<Ticket>();
+  tasks = signal<(Task[] | undefined)>(undefined);
 
   constructor() {
     effect(() => {
+      if(this.ticketParent()) {
+        this.tasks.set(this.ticketParent()?.tasks)
+      }
       if(this.pageEvent()){
         this.setNewPagination(this.pageEvent());
       }
@@ -67,9 +70,7 @@ export class ItemsListComponent {
   deleteItem(itemToDelete: Task) {
 
     const dialogRef = this.dialogService.openDialog(ActionComponent, 
-      {
-      disableClose : true
-      }, 
+      { disableClose : true }, 
       {
         itemType : this.itemType(),
         message : `Souhaitez-vous supprimer ${itemToDelete.title}`,
@@ -81,8 +82,14 @@ export class ItemsListComponent {
 
     const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {
-        this.items.update((oldValues) => {
-          return oldValues!.filter((ticket) => ticket.id !== result.id);
+        this.ticketParent.update(state => {
+          if (state) {
+            return {
+              ...state,
+              tasks: state.tasks.filter(task => task.id !== result.id)
+            };
+          }
+          return state;
         });
       }
     });
@@ -100,13 +107,14 @@ export class ItemsListComponent {
 
     const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {
-        this.items.update((oldValues) => {
-          return oldValues!.map((ticket) => {
-            if(ticket.id === result.id){
-              return { ...ticket, ...result };
-            }
-            return ticket;
-          });
+        this.ticketParent.update(state => {
+          if (state) {
+            return {
+              ...state,
+              tasks: state.tasks.map(task => task.id === result.id ? {...task, ...result}: task)
+            };
+          }
+          return state;
         });
       }
     });
@@ -134,7 +142,15 @@ export class ItemsListComponent {
 
     const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {
-        this.items.update((oldValues) => [result, ...oldValues!])
+        this.ticketParent.update(state => {
+          if (state) {
+            return {
+              ...state,
+              tasks: [...state.tasks, result]
+            };
+          }
+          return state;
+        });
       }
     });
     
@@ -153,10 +169,10 @@ export class ItemsListComponent {
   }
 
   private setNewPagination(pageEvent: PageEvent){
-    if(this.items() && this.items()!.length) {
+    if(this.tasks() && this.tasks()!.length) {
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
-      this.paginatedData.set(this.items()!.slice(startIndex, endIndex));
+      this.paginatedData.set(this.tasks()!.slice(startIndex, endIndex));
     }
   }
 

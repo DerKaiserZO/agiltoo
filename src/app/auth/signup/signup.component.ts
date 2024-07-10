@@ -44,7 +44,7 @@ export class SignupComponent implements OnInit{
 
    
   ngOnInit(): void {
-    if (this.userAuthStore.checkIfIsUserConnected!) {
+    if (this.userAuthStore.checkIfIsUserConnected()) {
       this.router.navigateByUrl('/home', {
         replaceUrl : true
       })

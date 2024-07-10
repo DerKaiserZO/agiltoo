@@ -18,15 +18,9 @@ export class AppComponent {
 
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadHandler(event: Event): void {
-    this.userAuthStore.persistStore();
-    this.dataConfigStore.persistStore();
-  }
-  constructor() {
-    effect(() => {
-      const persitedDataConfigStore = localStorage.getItem(localStorageDataConfigKey);
-      if(this.userAuthStore && this.userAuthStore.isLoggedIn() && persitedDataConfigStore === null) {
-        this.dataConfigStore.loadDataConfig();
-      }
-    })
+    if(this.userAuthStore && this.userAuthStore.isLoggedIn()) {
+      this.userAuthStore.persistStore();
+      this.dataConfigStore.persistStore();
+    }
   }
 }

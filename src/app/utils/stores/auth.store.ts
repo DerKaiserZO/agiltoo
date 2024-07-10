@@ -3,7 +3,7 @@ import { tapResponse } from '@ngrx/operators';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { UserInfos } from '../models/user-connected.model';
 import { LoginUser, SignupUser } from '../models/auth.model';
-import { debounceTime, filter, pipe, switchMap, tap } from 'rxjs';
+import { debounceTime, filter, pipe, switchMap, tap, throwError } from 'rxjs';
 import { computed, inject } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
@@ -122,31 +122,34 @@ export const UserAuthStore = signalStore(
                                         isLoading: false,
                                         roles: userConnected.roles
                                     });
+                                    if (userConnected.accessToken) {
+                                        authService.getCurrentUserInfos().pipe(
+                                            tapResponse({
+                                                next: (userInfo) => {
+                                                    patchState(store, { userAuth: userInfo });
+                                                    router.navigate(['/home'], { replaceUrl: true });
+                                                },
+                                                error: (error) => { 
+                                                    const err = new Error('Impossible de récupérer vos informations'); throwError(() => err);
+                                                }
+                                            })
+                                        );
+                                    } else {
+                                        const err = new Error('Impossible de récupérer vos informations'); throwError(() => err);
+                                    }
                                 },
                                 error: (err) => {
                                     patchState(store, {isLoading: false});
                                 },
                                 complete: () => patchState(store, {isLoading: false})
                             }),
-                            filter((userConnected) => {
-                                return userConnected.roles.includes('user');
-                            }),
-                            debounceTime(800),
-                            switchMap(() => {
-                                return authService.getCurrentUserInfos().pipe(
-                                    tapResponse({
-                                        next: (userInfo) => {
-                                            patchState(store, { userAuth: userInfo });
-                                            router.navigate(['/home'], { replaceUrl: true });
-                                        },
-                                        error: () => { }
-                                    })
-                                );
-                            }),
                         )
                     }),
                 )
             ),
+            upDateCurrentUserName(userName: string): void {
+                patchState(store, { userAuth: { ...store.userAuth()!, name : userName}})
+            }
         }
     }),
     withHooks({

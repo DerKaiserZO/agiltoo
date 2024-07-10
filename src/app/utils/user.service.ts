@@ -86,7 +86,6 @@ export class UserService {
               }
             )
           ),
-          retry(3),
           tap({
             next: (ticketsResults) => this.tickets.set(ticketsResults)
           })
