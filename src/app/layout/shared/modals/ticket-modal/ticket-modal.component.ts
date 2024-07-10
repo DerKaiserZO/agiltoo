@@ -17,9 +17,10 @@ export const configTaksModal: MatDialogConfig = {
   maxWidth: '50vw',
   width: '100%',
   position: {
-    top: '69px'
+    top: '10px'
   },
-  disableClose: true
+  disableClose: true,
+  maxHeight: '48vw'
 }
 
 const ticketFormInitialized = new FormGroup({
