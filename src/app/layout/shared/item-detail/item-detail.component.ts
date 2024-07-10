@@ -43,7 +43,9 @@ export class ItemDetailComponent {
       })
       return
     } 
-    const dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
+    const dialogRef = this.dialogService.openDialog(ActionComponent, {
+      disableClose : true
+    }, {
       itemType : this.itemType(),
       message : `Souhaitez-vous supprimer ${this.item()!.title} ?`,
       action: ActionType.SUPPRIMER,

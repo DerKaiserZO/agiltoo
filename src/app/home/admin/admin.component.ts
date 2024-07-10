@@ -91,7 +91,9 @@ export class AdminComponent implements OnInit{
   }
 
   onNameEdit(user: User) {
-    const dialogRef = this.dialogService.openDialog(AdminActionsComponent, undefined, {
+    const dialogRef = this.dialogService.openDialog(AdminActionsComponent, {
+      disableClose : true
+    }, {
       message : 'Veuillez renseigner le nouveau nom',
       modalTitle : 'Modification du nom',
       user

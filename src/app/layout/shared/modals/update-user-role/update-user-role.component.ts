@@ -23,7 +23,8 @@ export const configUpdateRoleModal: MatDialogConfig = {
   width: '100%',
   position: {
     top: '69px'
-  }
+  },
+  disableClose : true
 }
 
 @Component({

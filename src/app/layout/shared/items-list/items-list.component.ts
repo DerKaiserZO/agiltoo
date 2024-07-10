@@ -66,13 +66,18 @@ export class ItemsListComponent {
 
   deleteItem(itemToDelete: Task) {
 
-    const dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
-      itemType : this.itemType(),
-      message : `Souhaitez-vous supprimer ${itemToDelete.title}`,
-      action: ActionType.SUPPRIMER,
-      modalTitle : `${ActionType.SUPPRIMER} ${this.itemType()}`,
-      itemToDelete: itemToDelete,
-    });
+    const dialogRef = this.dialogService.openDialog(ActionComponent, 
+      {
+      disableClose : true
+      }, 
+      {
+        itemType : this.itemType(),
+        message : `Souhaitez-vous supprimer ${itemToDelete.title}`,
+        action: ActionType.SUPPRIMER,
+        modalTitle : `${ActionType.SUPPRIMER} ${this.itemType()}`,
+        itemToDelete: itemToDelete,
+      }
+    );
 
     const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {

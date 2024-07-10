@@ -18,7 +18,8 @@ export const configTaksModal: MatDialogConfig = {
   width: '100%',
   position: {
     top: '69px'
-  }
+  },
+  disableClose : true
 }
 
 const taskFormInitialized = new FormGroup({
