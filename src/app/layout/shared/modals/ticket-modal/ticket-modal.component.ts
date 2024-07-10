@@ -57,7 +57,7 @@ const ticketFormInitialized = new FormGroup({
   templateUrl: './ticket-modal.component.html',
   styleUrl: './ticket-modal.component.scss'
 })
-export class TicketModalComponent implements OnInit{
+export class TicketModalComponent implements OnInit {
   public data: { action: formAction, formData: FormGroup, itemId?: number} = inject(MAT_DIALOG_DATA);
   
   private dialogRef = inject(MatDialogRef<TicketModalComponent>);
@@ -69,12 +69,12 @@ export class TicketModalComponent implements OnInit{
   isLoading = signal<boolean>(false);
 
   itemForm = this.initForm();
-  projects: Project[] = [];
-  types: Type[] = [];
-  priorities: Priority[] = [];
-  statuses: Status[] = [];
-  tags: Tag[] = [];
-  epics: EpicLink[] = [];
+  projects = this.dataConfigStore.getProjects();
+  types = this.dataConfigStore.getTypes();
+  priorities = this.dataConfigStore.getPriorities();
+  statuses = this.dataConfigStore.getStatus();
+  tags = this.dataConfigStore.getTags();
+  epics = this.dataConfigStore.getEpics();
   users: Owner[] = [];
 
   get Title() {
@@ -84,12 +84,6 @@ export class TicketModalComponent implements OnInit{
 
 
   ngOnInit(): void {
-    this.projects = this.dataConfigStore.projects();
-    this.types = this.dataConfigStore.types();
-    this.priorities = this.dataConfigStore.priorities();
-    this.statuses = this.dataConfigStore.status();
-    this.tags = this.dataConfigStore.tags();
-    this.epics = this.dataConfigStore.epics();
     const subscription = this.authService.getResponsibles().subscribe((results) => this.users = results);
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
@@ -97,7 +91,6 @@ export class TicketModalComponent implements OnInit{
   onSubmit() {
     this.isLoading.set(true);
     this.ticketLogic();
-    
   }
 
   private initForm(): FormGroup {

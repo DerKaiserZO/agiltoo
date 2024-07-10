@@ -1,5 +1,5 @@
-import { inject } from "@angular/core";
-import { patchState, signalStore, withHooks, withMethods, withState } from "@ngrx/signals";
+import { computed, inject } from "@angular/core";
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { debounceTime, distinctUntilChanged, pipe, retry, switchMap, tap } from "rxjs";
 import { AuthService } from "../auth.service";
@@ -37,6 +37,14 @@ const initialDataConfigState: DataConfig = {
 export const dataConfigStore = signalStore(
     { providedIn: 'root'},
     withState(initialDataConfigState),
+    withComputed((store) => ({
+        getProjects: computed(() => store.projects),
+        getTypes: computed(() => store.types),
+        getStatus: computed(() => store.status),
+        getPriorities: computed(() => store.priorities),
+        getTags: computed(() => store.tags),
+        getEpics: computed(() => store.epics),
+    })),
     withMethods((store) => {
         const authService = inject(AuthService);
         return {

@@ -5,7 +5,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Project</mat-label>
             <mat-select formControlName="projectId">
-              @for (project of projects; track project.id) {
+              @for (project of projects(); track project.id) {
                 <mat-option [value]="project.id">
                   {{ project.name }}
                 </mat-option>
@@ -15,7 +15,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Type</mat-label>
             <mat-select formControlName="typeId">
-              @for (type of types; track type.id) {
+              @for (type of types(); track type.id) {
                 <mat-option [value]="type.id">
                   {{ type.name }}
                 </mat-option>
@@ -36,7 +36,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Status</mat-label>
             <mat-select formControlName="statusId">
-              @for (status of statuses; track status.id) {
+              @for (status of statuses(); track status.id) {
                 <mat-option [value]="status.id">
                   {{ status.name }}
                 </mat-option>
@@ -47,7 +47,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Priority</mat-label>
             <mat-select formControlName="priorityId">
-              @for (priority of priorities; track priority.id) {
+              @for (priority of priorities(); track priority.id) {
                 <mat-option [value]="priority.id">
                   {{ priority.name }}
                 </mat-option>
@@ -67,7 +67,7 @@
         <mat-form-field appearance="fill">
             <mat-label>Tag</mat-label>
             <mat-select formControlName="tagId">
-            @for (tag of tags; track tag.id) {
+            @for (tag of tags(); track tag.id) {
                 <mat-option [value]="tag.id">
                 {{ tag.name }}
                 </mat-option>
@@ -78,7 +78,7 @@
         <mat-form-field appearance="fill">
             <mat-label>Epic Link</mat-label>
             <mat-select formControlName="epicLinkId">
-            @for (epic of epics; track epic.id) {
+            @for (epic of epics(); track epic.id) {
                 <mat-option [value]="epic.id">
                 {{ epic.name }}
                 </mat-option>
