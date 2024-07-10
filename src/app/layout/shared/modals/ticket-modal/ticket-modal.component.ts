@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogConfig, Mat
 import { MatFormField } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
-import { EpicLink, ItemType, Owner, Priority, Project, Status, Tag, Type } from '../../../../utils/models/item.model';
+import { EpicLink, Owner, Priority, Project, Status, Tag, Type } from '../../../../utils/models/item.model';
 import { formAction } from '../../items-list/items-list.component';
 import { SnackbarService } from '../../../../utils/snackbar.service';
 import { dataConfigStore } from '../../../../utils/stores/data-config.store';
@@ -15,9 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export const configTaksModal: MatDialogConfig = {
   maxWidth: '50vw',
-  // maxHeight: '60vw',
   width: '100%',
-  // height: '100%',
   position: {
     top: '69px'
   }

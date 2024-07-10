@@ -23,14 +23,6 @@ export class HomeComponent {
   sidenav = viewChild(MatDrawer);
   userConnectedName = input<string>();
 
-  // userConnectedName = computed(() => {
-  //   const isUserRole = this.userAuthStore.getUserConnectedRole().includes('user');
-  //   if((isUserRole && !this.userAuthStore.isAdmin()) || (isUserRole && this.userAuthStore.isAdmin())){
-  //     return this.userAuthStore.getUserConnectedName();
-  //   } else {
-  //     return 'Admin'
-  //   }
-  // });
   
   close() {
     this.sidenav()!.close().then(() => this.isSideNavBarOpened.set(false));

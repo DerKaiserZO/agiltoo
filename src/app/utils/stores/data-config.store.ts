@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { patchState, signalStore, withHooks, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { catchError, debounceTime, distinctUntilChanged, pipe, retry, switchMap, tap, throwError } from "rxjs";
+import { debounceTime, distinctUntilChanged, pipe, retry, switchMap, tap } from "rxjs";
 import { AuthService } from "../auth.service";
 import { tapResponse } from "@ngrx/operators";
 

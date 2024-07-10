@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, input, model, signal } from '@angular/core';
+import { Component, DestroyRef, inject, input, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -33,6 +33,7 @@ export class ItemDetailComponent {
   itemType = input.required<ItemType>();
   authStore = inject(UserAuthStore);
   private dialogService = inject(DialogService);
+  destroyRef = inject(DestroyRef);
   router = inject(Router);
   
   deleteItem() {
@@ -42,14 +43,14 @@ export class ItemDetailComponent {
       })
       return
     } 
-    let dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
+    const dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
       itemType : this.itemType(),
       message : `Souhaitez-vous supprimer ${this.item()!.title} ?`,
       action: ActionType.SUPPRIMER,
       modalTitle : `${ActionType.SUPPRIMER} ${this.itemType()}`,
       itemToDelete: this.item()!
     });
-    dialogRef.afterClosed().subscribe(result => {
+    const subscription = dialogRef.afterClosed().subscribe(result => {
       if(result) {
         this.item.set(result);
         this.router.navigateByUrl('/home', {
@@ -57,22 +58,23 @@ export class ItemDetailComponent {
         });
       }
     });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   };
   
   updateItemDetails() {
-    let component: ComponentType<any> = this.itemType() === ItemType.TICKET ? TicketModalComponent : TaskModalComponent;
-    let dialogRef = this.dialogService.openDialog(component, configTaksModal,  {
+    const component: ComponentType<any> = this.itemType() === ItemType.TICKET ? TicketModalComponent : TaskModalComponent;
+    const dialogRef = this.dialogService.openDialog(component, configTaksModal,  {
       itemType: this.itemType(),
       action: 'Update',
       formData: this.initForm(),
       itemId: this.item()!.id
     });
-    dialogRef.afterClosed().subscribe(result => {
+    const subscription = dialogRef.afterClosed().subscribe(result => {
       if(result) {
         this.item.set(result);
       }
     });
-    
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   };
 
   

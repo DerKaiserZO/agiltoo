@@ -159,18 +159,4 @@ export const UserAuthStore = signalStore(
           }
         },
     }),
-    // withHooks( (store) => {
-    //     const router = inject(Router)
-    //     return {
-    //         onInit() {
-    //             const savedStore = localStorage.getItem(localStorageKey);
-    //             if(savedStore){
-    //                 patchState(store, JSON.parse(savedStore))
-    //             } else {
-    //                 patchState(store, initialState);
-    //                 router.navigate(['/login'], { replaceUrl: true });
-    //             }
-    //         }
-    //     }
-    // })
 );

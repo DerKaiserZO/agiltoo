@@ -1,11 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { UserService } from '../../../../utils/user.service';
-import { UserAuthStore } from '../../../../utils/stores/auth.store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 function equalValues(controlName1: string, controlName2: string) {
@@ -42,20 +41,20 @@ function equalValues(controlName1: string, controlName2: string) {
 })
 export class UpdatePasswordComponent {
   private userService = inject(UserService);
-  isLoading = signal<boolean>(false);
-  private authUserStore = inject(UserAuthStore);
   private dialogRef = inject(MatDialogRef<UpdatePasswordComponent>);
+  destroyRef = inject(DestroyRef);
+  isLoading = signal<boolean>(false);
 
   updatePasswordForm = new FormGroup({
-    password: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)],
-    }),
-    confirmPassword: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)],
-    }),
-  }, {
-    validators: [equalValues('password', 'confirmPassword')]
-  })
+      password: new FormControl('', {
+        validators: [Validators.required, Validators.minLength(6)],
+      }),
+      confirmPassword: new FormControl('', {
+        validators: [Validators.required, Validators.minLength(6)],
+      }),
+    }, {
+      validators: [equalValues('password', 'confirmPassword')]
+    })
 
   onSubmit() {
     this.isLoading.set(true)
@@ -63,9 +62,9 @@ export class UpdatePasswordComponent {
     .subscribe( {
       next: () => {
         this.isLoading.set(false);
-        this.dialogRef.close();
-        this.authUserStore.logout();
+        this.dialogRef.close(true);
       }
-    })
+    });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe())
   }
 }

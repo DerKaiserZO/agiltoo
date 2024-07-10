@@ -46,7 +46,7 @@ export class AdminActionsComponent {
 
   submit() {
     this.isLoading.set(true)
-    let subscription = this.userService.updateUser({
+    const subscription = this.userService.updateUser({
       ...this.data.user,
       name: this.name()
     }).subscribe({

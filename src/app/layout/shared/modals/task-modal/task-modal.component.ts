@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogConfig, Mat
 import { MatFormField } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
-import { EpicLink, ItemType, Owner, Priority, Project, Status, Tag, Type } from '../../../../utils/models/item.model';
+import { Owner, Priority, Status, Type } from '../../../../utils/models/item.model';
 import { formAction } from '../../items-list/items-list.component';
 import { SnackbarService } from '../../../../utils/snackbar.service';
 import { dataConfigStore } from '../../../../utils/stores/data-config.store';
@@ -15,9 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export const configTaksModal: MatDialogConfig = {
   maxWidth: '50vw',
-  // maxHeight: '60vw',
   width: '100%',
-  // height: '100%',
   position: {
     top: '69px'
   }
@@ -55,7 +53,6 @@ const taskFormInitialized = new FormGroup({
 })
 export class TaskModalComponent implements OnInit{
   public data: { action: formAction, formData: FormGroup,ticketId: number ,itemId?: number} = inject(MAT_DIALOG_DATA);
-  
   private dialogRef = inject(MatDialogRef<TaskModalComponent>);
   private snackbar = inject(SnackbarService);
   private dataConfigStore = inject(dataConfigStore);
@@ -107,39 +104,39 @@ export class TaskModalComponent implements OnInit{
 
   private updateTask() {
     const subscription = this.userService.updateTask(this.data.itemId!, this.itemForm.value)
-    .subscribe({
-      next: (updatedTicket) => {
-        this.snackbar.openSnackBar('Modification effectuée avec succés');
-        this.initForm().reset();
-        this.dialogRef.close(updatedTicket);
-      },
-      error: (error: Error) => {
-        this.snackbar.openSnackBar(error.message, true);
-        this.isLoading.set(false);
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      }
-    });
+      .subscribe({
+        next: (updatedTicket) => {
+          this.snackbar.openSnackBar('Modification effectuée avec succés');
+          this.initForm().reset();
+          this.dialogRef.close(updatedTicket);
+        },
+        error: (error: Error) => {
+          this.snackbar.openSnackBar(error.message, true);
+          this.isLoading.set(false);
+        },
+        complete: () => {
+          this.isLoading.set(false);
+        }
+      });
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
   
   private createTask() {
     const subscription = this.userService.createTask(this.data.ticketId, this.itemForm.value)
-    .subscribe({
-      next: (createdTask) => {
-        this.snackbar.openSnackBar('Création effectuée avec succés');
-        this.initForm().reset();
-        this.dialogRef.close(createdTask);
-      },
-      error: (error: Error) => {
-        this.snackbar.openSnackBar(error.message, true);
-        this.isLoading.set(false);
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      }
-    });
+      .subscribe({
+        next: (createdTask) => {
+          this.snackbar.openSnackBar('Création effectuée avec succés');
+          this.initForm().reset();
+          this.dialogRef.close(createdTask);
+        },
+        error: (error: Error) => {
+          this.snackbar.openSnackBar(error.message, true);
+          this.isLoading.set(false);
+        },
+        complete: () => {
+          this.isLoading.set(false);
+        }
+      });
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
 }

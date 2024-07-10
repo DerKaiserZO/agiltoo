@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ItemDetailComponent } from '../../../layout/shared/item-detail/item-detail.component';
-import { ActivatedRoute, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Task, ItemType } from '../../../utils/models/item.model';
 import { MatButtonModule } from '@angular/material/button';
 import { UserService } from '../../../utils/user.service';
@@ -36,18 +36,18 @@ export class TaskComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading.set(true);
     const subscription = this.userService.getOneTask(+this.activatedRoute.snapshot.paramMap.get('taskId')!)
-    .subscribe({
-      next: (result) => {
-        this.task = result;
-      },
-      error: (error) => {
-        this.snackbar.openSnackBar(error.message, true);
-        this.router.navigateByUrl('not-found', {
-          replaceUrl: true
-        });
-      },
-      complete: () => this.isLoading.set(false)
-    })
+      .subscribe({
+        next: (result) => {
+          this.task = result;
+        },
+        error: (error) => {
+          this.snackbar.openSnackBar(error.message, true);
+          this.router.navigateByUrl('not-found', {
+            replaceUrl: true
+          });
+        },
+        complete: () => this.isLoading.set(false)
+      });
     this.destroyRef.onDestroy(() => subscription.unsubscribe())
   }
 }

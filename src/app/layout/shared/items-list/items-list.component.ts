@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -12,8 +12,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActionComponent, ActionType } from '../modals/action/action.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TicketModalComponent } from '../modals/ticket-modal/ticket-modal.component';
-import { ComponentType } from '@angular/cdk/portal';
 import { UserAuthStore } from '../../../utils/stores/auth.store';
 
 export enum formAction {
@@ -44,6 +42,7 @@ export class ItemsListComponent {
   private router = inject(Router);
   private authStore = inject(UserAuthStore);
   private activatedRoute = inject(ActivatedRoute);
+  destroyRef = inject(DestroyRef);
   items = model<Task[]>();
   paginatedData = signal<Task[]>([]);
   pageEvent = input.required<PageEvent>();
@@ -64,39 +63,37 @@ export class ItemsListComponent {
     })
   }
 
-    // ngOnInit(): void {
-    //   console.log('items', this.items())
-    //   if(this.pageEvent()){
-    //     this.setNewPagination(this.pageEvent());
-    //   }
-    // }
-
 
   deleteItem(itemToDelete: Task) {
-    let dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
+
+    const dialogRef = this.dialogService.openDialog(ActionComponent, undefined, {
       itemType : this.itemType(),
       message : `Souhaitez-vous supprimer ${itemToDelete.title}`,
       action: ActionType.SUPPRIMER,
       modalTitle : `${ActionType.SUPPRIMER} ${this.itemType()}`,
       itemToDelete: itemToDelete,
     });
-    dialogRef.afterClosed().subscribe((result: Task) => {
+
+    const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {
         this.items.update((oldValues) => {
           return oldValues!.filter((ticket) => ticket.id !== result.id);
         });
       }
-    })
+    });
+
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   };
 
   updateItemDetails(itemToUpdate: Task) {
-    let dialogRef = this.dialogService.openDialog(TaskModalComponent, configTaksModal,  {
+    const dialogRef = this.dialogService.openDialog(TaskModalComponent, configTaksModal,  {
       itemType: this.itemType(),
       action: formAction.UPDATE,
       formData: this.initForm(itemToUpdate),
       itemId: itemToUpdate.id
     });
-    dialogRef.afterClosed().subscribe((result: Task) => {
+
+    const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {
         this.items.update((oldValues) => {
           return oldValues!.map((ticket) => {
@@ -107,7 +104,8 @@ export class ItemsListComponent {
           });
         });
       }
-    })
+    });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
 
   getDetails(item: Task) {
@@ -123,16 +121,19 @@ export class ItemsListComponent {
 
   add() {
     const ticketId = this.activatedRoute.snapshot.paramMap.get('ticketId');
-    let dialogRef = this.dialogService.openDialog(TaskModalComponent, configTaksModal, {
+    const dialogRef = this.dialogService.openDialog(TaskModalComponent, configTaksModal, {
       itemType: this.itemType(),
       action: formAction.CREATE,
       ...(this.itemType() === ItemType.TASK && {ticketId} )
     });
-    dialogRef.afterClosed().subscribe((result: Task) => {
+
+    const subscription = dialogRef.afterClosed().subscribe((result: Task) => {
       if(this.itemType() === ItemType.TASK && result) {
         this.items.update((oldValues) => [result, ...oldValues!])
       }
     });
+    
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
 
   

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CardComponent } from '../../layout/shared/card/card.component';
 import { MatInputModule } from '@angular/material/input';
@@ -49,14 +49,6 @@ export class LoginComponent implements OnInit {
       })
     }
   }
-
-  // get emailIsInvalid() {
-  //   return (this.loginForm.controls.email.touched && this.loginForm.controls.email.dirty && this.loginForm.controls.email.invalid);
-  // }
-
-  // get passwordIsInvalid() {
-  //   return (this.loginForm.controls.password.touched && this.loginForm.controls.password.dirty && this.loginForm.controls.password.invalid);
-  // }
 
   onSubmit(){
     this.userAuthStore.login(this.loginForm.value as LoginUser);

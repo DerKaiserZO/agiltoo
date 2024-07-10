@@ -1,7 +1,6 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import { USERS_DATA } from '../../dummy';
 import { User } from './user.model';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
@@ -9,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { DialogService } from '../../utils/dialog.service';
-import { ActionType } from '../../layout/shared/modals/action/action.component';
 import { configUpdateRoleModal, UpdateUserRoleComponent } from '../../layout/shared/modals/update-user-role/update-user-role.component';
 import { UserService } from '../../utils/user.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -93,12 +91,12 @@ export class AdminComponent implements OnInit{
   }
 
   onNameEdit(user: User) {
-    let dialogRef = this.dialogService.openDialog(AdminActionsComponent, undefined, {
+    const dialogRef = this.dialogService.openDialog(AdminActionsComponent, undefined, {
       message : 'Veuillez renseigner le nouveau nom',
       modalTitle : 'Modification du nom',
       user
     });
-    let subscription = dialogRef.afterClosed().subscribe(result => {
+    const subscription = dialogRef.afterClosed().subscribe(result => {
       if(result) {
         this.dataSource!.data = this.dataSource!.data.map((user) => {
           if(user.id === result.id) {
@@ -114,12 +112,12 @@ export class AdminComponent implements OnInit{
   }
 
   onRoleEdit(user: User) {
-    let dialogRef = this.dialogService.openDialog(UpdateUserRoleComponent, configUpdateRoleModal, {
+    const dialogRef = this.dialogService.openDialog(UpdateUserRoleComponent, configUpdateRoleModal, {
       message : 'Veuillez choisir le role ',
       modalTitle : 'Modification du role',
       userToUpdate: user
     });
-    let subscription = dialogRef.afterClosed().subscribe(result => {
+    const subscription = dialogRef.afterClosed().subscribe(result => {
       if(result) {
         this.dataSource!.data = this.dataSource!.data.map((user) => {
           if(user.id === result.id) {

@@ -19,7 +19,6 @@ export class SnackbarService {
     this.snackbar.openFromComponent(SnackBarComponent, {
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
-      duration: this.durationInSeconds * 1000,
       panelClass: ['snackbar',(hasError ? 'error' : 'success')],
       data: {
         message

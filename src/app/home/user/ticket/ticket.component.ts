@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import { ItemType, Task, Ticket } from '../../../utils/models/item.model';
-import { ActivatedRoute, ActivatedRouteSnapshot, ResolveFn, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,30 +10,11 @@ import { ItemsListComponent } from '../../../layout/shared/items-list/items-list
 import { PageEvent } from '@angular/material/paginator';
 import { ItemDetailComponent } from '../../../layout/shared/item-detail/item-detail.component';
 import { UserService } from '../../../utils/user.service';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SnackbarService } from '../../../utils/snackbar.service';
 
 const pageSize = 10;
 
-const initItem = {
-  id: 0,
-  title: '',
-  description: '',
-  comment: '',
-  storyPoint: 0,
-  priority: '',
-  status: '',
-  owner: '',
-  responsible: '',
-  createdOn: '',
-  updatedOn: '',
-  project: '',
-  type: '',
-  tag: '',
-  epicLink: '',
-  tasks: [],
-}
 @Component({
   selector: 'app-ticket',
   standalone: true,

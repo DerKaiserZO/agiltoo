@@ -1,10 +1,10 @@
-import { Component, DestroyRef, effect, inject, input, model, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DialogService } from '../../../utils/dialog.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -43,7 +43,6 @@ const ITEM_TYPE = "Tickets"
 export class TicketsListComponent {
   private dialogService = inject(DialogService);
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
   private userService = inject(UserService);
   private destroyRef = inject(DestroyRef);
   private authStore = inject(UserAuthStore);
@@ -61,9 +60,10 @@ export class TicketsListComponent {
       if(this.pageEvent){
         this.setNewPagination(this.pageEvent);
       }
-    },{
-      allowSignalWrites: true
-    })
+      },{
+        allowSignalWrites: true
+      }
+    )
   }
 
   ngOnInit(): void {
@@ -71,9 +71,7 @@ export class TicketsListComponent {
     const subscription = this.userService.getTickets()
     .subscribe(
         {
-          error: (result) => {
-            return this.items.set(result);
-          },
+          next: (result) => this.items.set(result),
           complete: () => this.isLoadingContent.set(false)
         }
     )
@@ -96,7 +94,7 @@ export class TicketsListComponent {
       action: ActionType.SUPPRIMER,
       modalTitle : `${ActionType.SUPPRIMER} ${ITEM_TYPE}`,
       itemToDelete: itemToDelete,
-    })
+    });
   };
 
   updateItemDetails(itemToUpdate: Ticket) {

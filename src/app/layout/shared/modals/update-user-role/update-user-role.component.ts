@@ -110,7 +110,7 @@ export class UpdateUserRoleComponent implements OnInit{
     const user = this.data.userToUpdate;
     const rolesToUpdate =  this.roles();
     this.isLoading.set(true);
-    let subscription = this.userService.updateUser({
+    const subscription = this.userService.updateUser({
       ...user,
       roles: rolesToUpdate
     }).subscribe(
